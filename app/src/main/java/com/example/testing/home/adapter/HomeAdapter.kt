@@ -1,14 +1,16 @@
 package com.example.testing.home.adapter
 
 import android.content.Context
+import android.os.Parcelable
+import android.util.SparseIntArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.testing.R
-import com.example.testing.databinding.HomeStoriesBinding
 import com.example.testing.databinding.HomeStoriesChildBinding
 import com.example.testing.databinding.SampleItemBinding
 import com.example.testing.home.Const.POST
@@ -24,6 +26,8 @@ class HomeAdapter :
     lateinit var onSaveClicked: (HomeModel) -> Unit
     private lateinit var context: Context
     val storyList: ArrayList<StoryModel> = arrayListOf()
+    private val positionList = SparseIntArray()
+    private val layoutManagerStates = hashMapOf<Int, Parcelable?>()
 
     override fun getItemViewType(position: Int): Int {
         return if(getItem(position).isStory == ISSTORY.TRUE) STORY else POST
@@ -82,25 +86,41 @@ class HomeAdapter :
 
     inner class HomeAdapterStoriesViewHolder(private val storiesBinding: HomeStoriesChildBinding) :
         RecyclerView.ViewHolder(storiesBinding.root) {
+
+        lateinit var layoutManager: LinearLayoutManager
             fun bind(storiesItem: HomeModel) {
-                storiesBinding.childRV.layoutManager = LinearLayoutManager(storiesBinding.root.context, LinearLayoutManager.HORIZONTAL, false)
+                layoutManager = LinearLayoutManager(storiesBinding.root.context, LinearLayoutManager.HORIZONTAL, false)
+                storiesBinding.childRV.layoutManager = layoutManager
                 val storyAdapter = StoryAdapter()
                 storiesBinding.childRV.adapter = storyAdapter
-                storyList.add(StoryModel(R.drawable.flower))
-                storyList.add(StoryModel(R.drawable.monkey))
-                storyList.add(StoryModel(R.drawable.campfire))
-                storyList.add(StoryModel(R.drawable.deer))
-                storyList.add(StoryModel(R.drawable.flower))
-                storyList.add(StoryModel(R.drawable.campfire))
-                storyList.add(StoryModel(R.drawable.flower))
-                storyList.add(StoryModel(R.drawable.monkey))
-                storyList.add(StoryModel(R.drawable.campfire))
-                storyList.add(StoryModel(R.drawable.deer))
-                storyList.add(StoryModel(R.drawable.flower))
-                storyList.add(StoryModel(R.drawable.campfire))
-
+                if(storyList.isEmpty()) {
+                    storyList.add(StoryModel(storiesItem.userStory))
+                    storyList.add(StoryModel(storiesItem.userStory))
+                    storyList.add(StoryModel(storiesItem.userStory))
+                    storyList.add(StoryModel(storiesItem.userStory))
+                    storyList.add(StoryModel(storiesItem.userStory))
+                    storyList.add(StoryModel(storiesItem.userStory))
+                    storyList.add(StoryModel(storiesItem.userStory))
+                    storyList.add(StoryModel(storiesItem.userStory))
+                    storyList.add(StoryModel(storiesItem.userStory))
+                    storyList.add(StoryModel(storiesItem.userStory))
+                    storyList.add(StoryModel(storiesItem.userStory))
+                    storyList.add(StoryModel(storiesItem.userStory))
+                    storyList.add(StoryModel(storiesItem.userStory))
+                }
                 storyAdapter.submitList(storyList)
+
             }
+    }
+
+    override fun onViewRecycled(holder: ViewHolder) {
+
+        if(holder is HomeAdapterStoriesViewHolder){
+            val position = holder.adapterPosition
+            val firstVisiblePosition = holder.layoutManager.findFirstVisibleItemPosition()
+            positionList.put(position, firstVisiblePosition)
+        }
+        super.onViewRecycled(holder)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -117,6 +137,10 @@ class HomeAdapter :
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if(getItemViewType(position) == STORY) {
             (holder as HomeAdapterStoriesViewHolder).bind(getItem(position))
+            val lastSeenFirstPosition = positionList.get(position, 0)
+            if (lastSeenFirstPosition >= 0) {
+                holder.layoutManager.scrollToPositionWithOffset(lastSeenFirstPosition, 0)
+            }
         } else {
             (holder as HomeAdapterPostViewHolder).bind(getItem(position))
         }
