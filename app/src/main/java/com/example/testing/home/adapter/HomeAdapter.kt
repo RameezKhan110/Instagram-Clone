@@ -87,14 +87,19 @@ class HomeAdapter :
                 val storyAdapter = StoryAdapter()
                 storiesBinding.childRV.adapter = storyAdapter
                 storyList.add(StoryModel(R.drawable.flower))
+                storyList.add(StoryModel(R.drawable.monkey))
+                storyList.add(StoryModel(R.drawable.campfire))
+                storyList.add(StoryModel(R.drawable.deer))
                 storyList.add(StoryModel(R.drawable.flower))
+                storyList.add(StoryModel(R.drawable.campfire))
                 storyList.add(StoryModel(R.drawable.flower))
+                storyList.add(StoryModel(R.drawable.monkey))
+                storyList.add(StoryModel(R.drawable.campfire))
+                storyList.add(StoryModel(R.drawable.deer))
                 storyList.add(StoryModel(R.drawable.flower))
-                storyList.add(StoryModel(R.drawable.flower))
-                storyList.add(StoryModel(R.drawable.flower))
-//                storiesItem.userStory?.let { story ->
-//                    storiesBinding.storiesImage.setImageResource(story)
-//                }
+                storyList.add(StoryModel(R.drawable.campfire))
+
+                storyAdapter.submitList(storyList)
             }
     }
 
