@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.testing.home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.example.testing.search.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_profileFragment2"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_postDetailFragment"
+            app:destination="@id/postDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.testing.profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_savedPostFragment"
+            app:destination="@id/savedPostFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_postDetailFragment"
+            app:destination="@id/postDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/savedPostFragment"
+        android:name="com.example.testing.profile.saved_post.SavedPostFragment"
+        android:label="Saved"
+        tools:layout="@layout/fragment_saved_post" >
+        <action
+            android:id="@+id/action_savedPostFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/postDetailFragment"
+        android:name="com.example.testing.search.post_detail.PostDetailFragment"
+        android:label="Detail"
+        tools:layout="@layout/fragment_detail" />
+    <fragment
+        android:id="@+id/postsFragment"
+        android:name="com.example.testing.profile.timeline_post.PostsFragment"
+        android:label="fragment_posts"
+        tools:layout="@layout/fragment_posts" >
+        <action
+            android:id="@+id/action_postsFragment_to_postDetailFragment"
+            app:destination="@id/postDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/reelsFragment"
+        android:name="com.example.testing.profile.reels.ReelsFragment"
+        android:label="fragment_reels"
+        tools:layout="@layout/fragment_reels" >
+        <action
+            android:id="@+id/action_reelsFragment_to_postDetailFragment"
+            app:destination="@id/postDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/tagPostsFragment"
+        android:name="com.example.testing.profile.tag_post.TagPostsFragment"
+        android:label="fragment_tagged_posts"
+        tools:layout="@layout/fragment_tagged_posts" >
+        <action
+            android:id="@+id/action_tagPostsFragment_to_postDetailFragment"
+            app:destination="@id/postDetailFragment" />
+    </fragment>
+</navigation>

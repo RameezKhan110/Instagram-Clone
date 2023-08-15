@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".search.post_detail.PostDetailFragment">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/detailUserImage"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="24dp"
+        android:src="@drawable/image"
+        app:civ_border_width="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </de.hdodenhof.circleimageview.CircleImageView>
+
+    <TextView
+        android:id="@+id/detailUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="24dp"
+        android:text="Rameez Khan"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@+id/detailUserImage"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/detailUserLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hyderabad"
+        android:textSize="11sp"
+        app:layout_constraintEnd_toEndOf="@+id/detailUserName"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/detailUserName"
+        app:layout_constraintTop_toBottomOf="@+id/detailUserName" />
+
+    <ImageView
+        android:id="@+id/detailUserPost"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:scaleType="centerCrop"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detailUserLocation"
+        tools:srcCompat="@tools:sample/avatars">
+
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/detailLike"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/heart"
+        app:layout_constraintBottom_toBottomOf="@+id/detailComment"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/detailComment"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/detailShare"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/chat"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.013"
+        app:layout_constraintStart_toEndOf="@+id/detailComment"
+        app:layout_constraintTop_toBottomOf="@+id/detailUserPost" />
+
+    <ImageView
+        android:id="@+id/detailComment"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="12dp"
+        android:src="@drawable/send"
+        app:layout_constraintBottom_toBottomOf="@+id/detailShare"
+        app:layout_constraintStart_toEndOf="@+id/detailLike"
+        app:layout_constraintTop_toTopOf="@+id/detailShare"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/detailSave"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/saveinstagram"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/detailUserPost" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
