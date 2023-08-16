@@ -1,6 +1,7 @@
 package com.example.testing.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,17 +28,18 @@ class HomeFragment : Fragment() {
 
         binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerView.adapter = homeAdapter
+        binding.parentRecyclerViewHome.layoutManager = LinearLayoutManager(requireContext())
+        binding.parentRecyclerViewHome.adapter = homeAdapter
 
         homeViewModel.addPost()
         homeViewModel.getPost()
 
-        homeAdapter.onSaveClicked = { postItem ->
+        homeAdapter.onSavedClicked_HomeAdapter = { postItem ->
             Toast.makeText(requireContext(), "Saved", Toast.LENGTH_SHORT).show()
             sharedViewModel.getUserWholePost(postItem)
         }
         homeViewModel.getLiveData.observe(viewLifecycleOwner) {
+            Log.d("TAG", "HomeFragmentList: $it")
             homeAdapter.submitList(it)
         }
 

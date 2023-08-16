@@ -7,13 +7,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testing.R
 import com.example.testing.databinding.SampleItemBinding
-import com.example.testing.home.model.HomeModel
+import com.example.testing.home.model.PostModel
 import com.example.testing.utils.DoubleClickListener
 
-class MySavedPostAdapter :
-    ListAdapter<HomeModel, MySavedPostAdapter.MySavedPostViewHolder>(DiffUtil()) {
+class MySavedPostAdapter : ListAdapter<PostModel, MySavedPostAdapter.MySavedPostViewHolder>(DiffUtil()){
 
-    lateinit var onUnSaveClicked: (HomeModel) -> Unit
+    lateinit var onUnSaveClicked: (PostModel) -> Unit
 
     inner class MySavedPostViewHolder(binding: SampleItemBinding) :
         RecyclerView.ViewHolder(binding.root)
@@ -27,7 +26,6 @@ class MySavedPostAdapter :
     override fun onBindViewHolder(holder: MySavedPostViewHolder, position: Int) {
 
         val savedPostItems = getItem(position)
-
         SampleItemBinding.bind(holder.itemView).apply {
 
             userName.text = savedPostItems.userName
@@ -67,12 +65,12 @@ class MySavedPostAdapter :
 
     }
 
-    class DiffUtil: androidx.recyclerview.widget.DiffUtil.ItemCallback<HomeModel>() {
-        override fun areItemsTheSame(oldItem: HomeModel, newItem: HomeModel): Boolean {
+    class DiffUtil: androidx.recyclerview.widget.DiffUtil.ItemCallback<PostModel>() {
+        override fun areItemsTheSame(oldItem: PostModel, newItem: PostModel): Boolean {
             return oldItem.postId == newItem.postId
         }
 
-        override fun areContentsTheSame(oldItem: HomeModel, newItem: HomeModel): Boolean {
+        override fun areContentsTheSame(oldItem: PostModel, newItem: PostModel): Boolean {
             return oldItem.equals(newItem)
         }
     }
