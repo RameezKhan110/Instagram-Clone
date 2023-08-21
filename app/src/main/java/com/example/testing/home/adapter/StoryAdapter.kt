@@ -2,12 +2,13 @@ package com.example.testing.home.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testing.databinding.HomeStoriesBinding
-import com.example.testing.home.model.StoryModel
+import com.example.testing.home.room.post.story.Story
 
-class StoryAdapter: ListAdapter<StoryModel, RecyclerView.ViewHolder>(DiffUtil()) {
+class StoryAdapter: ListAdapter<Story, RecyclerView.ViewHolder>(StoryDiffUtil()) {
 
     inner class StoryViewHolder(binding: HomeStoriesBinding): RecyclerView.ViewHolder(binding.root)
 
@@ -20,28 +21,16 @@ class StoryAdapter: ListAdapter<StoryModel, RecyclerView.ViewHolder>(DiffUtil())
         val storyItems = getItem(position)
 
         HomeStoriesBinding.bind(holder.itemView).apply {
-            userStory.setImageResource(storyItems.story!!)
+            userStoryImageView.setImageURI(storyItems.story.toUri())
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    class DiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<StoryModel>() {
-        override fun areItemsTheSame(oldItem: StoryModel, newItem: StoryModel): Boolean {
+    class StoryDiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<Story>() {
+        override fun areItemsTheSame(oldItem: Story, newItem: Story): Boolean {
             return oldItem.story == newItem.story
         }
 
-        override fun areContentsTheSame(oldItem: StoryModel, newItem: StoryModel): Boolean {
+        override fun areContentsTheSame(oldItem: Story, newItem: Story): Boolean {
             return oldItem == newItem
         }
     }

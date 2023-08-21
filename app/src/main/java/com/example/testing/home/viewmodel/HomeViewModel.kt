@@ -1,25 +1,42 @@
 package com.example.testing.home.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.testing.home.model.HomeModel
+import androidx.lifecycle.viewModelScope
 import com.example.testing.home.repository.HomeRepository
+import com.example.testing.home.room.post.Home
+import com.example.testing.home.room.post.HomeDatabase
+import com.example.testing.home.room.post.story.Story
+import com.example.testing.home.room.post.story.StoryDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
 
-    private val homeRepository = HomeRepository()
+    val postDao = HomeDatabase.getDatabase().homeDao()
+    val storyDao = StoryDatabase.getDatabase().storyDao()
+    val homeRepository = HomeRepository(postDao, storyDao)
 
-    val _getMutableLiveData: MutableLiveData<List<HomeModel>> = MutableLiveData()
-    val getLiveData: LiveData<List<HomeModel>> = _getMutableLiveData
-
-
-    fun addPost() {
-        homeRepository.addPost()
+    fun addPost(post: Home) = viewModelScope.launch(Dispatchers.IO) {
+        homeRepository.addPost(post)
     }
 
-    fun getPost() {
-        _getMutableLiveData.value = homeRepository.getPost()
+    fun getPost(): LiveData<List<Home>> {
+        Log.d("TAG", "get Post View Model: " + homeRepository.getPost())
+        return homeRepository.getPost()
+    }
+
+    fun deleteTable() = viewModelScope.launch(Dispatchers.IO) {
+        homeRepository.deleteTable()
+    }
+
+    fun addStory(story: Story) = viewModelScope.launch {
+        homeRepository.addStory(story)
+    }
+
+    fun getStory(): LiveData<List<Story>> {
+        return homeRepository.getStory()
     }
 
 }

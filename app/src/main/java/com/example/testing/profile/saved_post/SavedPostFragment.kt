@@ -42,7 +42,7 @@ class SavedPostFragment : Fragment() {
         savedPostAdapter.onUnSaveClicked = { postItem ->
             Toast.makeText(requireContext(), "Unsaved", Toast.LENGTH_SHORT).show()
             val deletePos = homePostItemList.indexOfFirst {
-                it.postId == postItem.postId
+                it.id == postItem.postId
             }
             homePostItemList.removeAt(deletePos)
             savedPostAdapter.notifyItemRemoved(deletePos)

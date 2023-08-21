@@ -1,47 +1,30 @@
 package com.example.testing.home.adapter
 
-import android.util.Log
 import android.util.SparseIntArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.testing.R
 import com.example.testing.databinding.HomeStoriesChildBinding
 import com.example.testing.databinding.SampleItemChildBinding
-import com.example.testing.home.Const.POST
-import com.example.testing.home.Const.STORY
-import com.example.testing.home.ISSTORY
-import com.example.testing.home.model.HomeModel
 import com.example.testing.home.model.PostModel
-import com.example.testing.home.model.StoryModel
+import com.example.testing.home.room.post.Home
+import com.example.testing.home.room.post.HomeCommonModel
+import com.example.testing.home.room.post.story.Story
 
 class HomeAdapter :
-    ListAdapter<HomeModel, RecyclerView.ViewHolder>(DiffUtil()) {
+    ListAdapter<HomeCommonModel, RecyclerView.ViewHolder>(HomeDiffUtil()) {
 
-    lateinit var onSavedClicked_HomeAdapter: (PostModel) -> Unit
-    val storyList: ArrayList<StoryModel> = arrayListOf()
-    val postAdapter = PostAdapter()
-    val postList: ArrayList<PostModel> = arrayListOf()
+    var onSavedClickedHomeAdapter: ((Home) -> Unit)? = null
     private val positionList = SparseIntArray()
+
+
     override fun getItemViewType(position: Int): Int {
-        return if (getItem(position).isStory == ISSTORY.TRUE) STORY else POST
-    }
-
-    inner class HomeAdapterPostViewHolder(private val postBinding: SampleItemChildBinding) :
-        RecyclerView.ViewHolder(postBinding.root) {
-        fun bind(postItem: HomeModel) {
-            val postAdapter = PostAdapter()
-
-            postBinding.postRV.layoutManager =
-                LinearLayoutManager(postBinding.root.context, LinearLayoutManager.VERTICAL, false)
-            postBinding.postRV.adapter = postAdapter
-            postAdapter.submitList(postItem.postLists)
-
-            postAdapter.onSaveClicked = {
-                onSavedClicked_HomeAdapter(it)
-            }
+        return when (getItem(position)) {
+            is HomeCommonModel.StoryModelItem -> R.layout.home_stories
+            is HomeCommonModel.PostModelItem -> R.layout.sample_item
         }
     }
 
@@ -49,7 +32,7 @@ class HomeAdapter :
         RecyclerView.ViewHolder(storiesBinding.root) {
 
         lateinit var layoutManager: LinearLayoutManager
-        fun bind(storiesItem: HomeModel) {
+        fun bind(storiesItem: List<Story>) {
             layoutManager = LinearLayoutManager(
                 storiesBinding.root.context,
                 LinearLayoutManager.HORIZONTAL,
@@ -58,12 +41,61 @@ class HomeAdapter :
             storiesBinding.childRV.layoutManager = layoutManager
             val storyAdapter = StoryAdapter()
             storiesBinding.childRV.adapter = storyAdapter
-            storyAdapter.submitList(storiesItem.storyList)
+            storyAdapter.submitList(storiesItem)
 
         }
     }
+    inner class HomeAdapterPostViewHolder(private val postBinding: SampleItemChildBinding) :
+        RecyclerView.ViewHolder(postBinding.root) {
+        fun bind(postItem: Home) {
+            val postAdapter = PostAdapter()
+            postAdapter.onSaveClicked = {
+                onSavedClickedHomeAdapter?.invoke(it)
+            }
 
-    override fun onViewRecycled(holder: ViewHolder) {
+            postBinding.postRV.layoutManager =
+                LinearLayoutManager(postBinding.root.context, LinearLayoutManager.VERTICAL, false)
+            postBinding.postRV.adapter = postAdapter
+            postAdapter.submitList((listOf(postItem)))
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+
+            R.layout.home_stories -> HomeAdapterStoriesViewHolder(
+                HomeStoriesChildBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
+
+            R.layout.sample_item -> HomeAdapterPostViewHolder(
+                SampleItemChildBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
+            else -> {
+                throw IllegalArgumentException("Unknown view type")
+            }
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (val item = getItem(position)) {
+            is HomeCommonModel.StoryModelItem -> {
+                (holder as HomeAdapterStoriesViewHolder).bind(item.storyItem)
+
+
+            }
+            is HomeCommonModel.PostModelItem -> (holder as HomeAdapterPostViewHolder).bind(item.postItem)
+        }
+    }
+
+    override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
 
         if (holder is HomeAdapterStoriesViewHolder) {
             val position = holder.adapterPosition
@@ -72,40 +104,14 @@ class HomeAdapter :
         }
         super.onViewRecycled(holder)
     }
+}
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-
-        return if (viewType == STORY) {
-            val viewHolder =
-                HomeStoriesChildBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            HomeAdapterStoriesViewHolder(viewHolder)
-        } else {
-            val viewHolder =
-                SampleItemChildBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            HomeAdapterPostViewHolder(viewHolder)
-        }
+class HomeDiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<HomeCommonModel>() {
+    override fun areItemsTheSame(oldItem: HomeCommonModel, newItem: HomeCommonModel): Boolean {
+        return oldItem == newItem
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (getItemViewType(position) == STORY) {
-            (holder as HomeAdapterStoriesViewHolder).bind(getItem(position))
-            val lastSeenFirstPosition = positionList.get(position, 0)
-            if (lastSeenFirstPosition >= 0) {
-                holder.layoutManager.scrollToPositionWithOffset(lastSeenFirstPosition, 0)
-            }
-        } else {
-            (holder as HomeAdapterPostViewHolder).bind(getItem(position))
-        }
+    override fun areContentsTheSame(oldItem: HomeCommonModel, newItem: HomeCommonModel): Boolean {
+        return oldItem == newItem
     }
-
-    class DiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<HomeModel>() {
-        override fun areItemsTheSame(oldItem: HomeModel, newItem: HomeModel): Boolean {
-            return oldItem.postId == newItem.postId
-        }
-
-        override fun areContentsTheSame(oldItem: HomeModel, newItem: HomeModel): Boolean {
-            return oldItem == newItem
-        }
-    }
-
 }

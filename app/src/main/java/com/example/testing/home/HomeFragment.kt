@@ -1,7 +1,6 @@
 package com.example.testing.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.testing.databinding.FragmentHomeBinding
 import com.example.testing.home.adapter.HomeAdapter
+import com.example.testing.home.room.post.HomeCommonModel
+import com.example.testing.home.room.post.story.Story
 import com.example.testing.home.viewmodel.HomeViewModel
 import com.example.testing.profile.saved_post.viewmodel.SavedSharedViewModel
 
@@ -20,6 +21,8 @@ class HomeFragment : Fragment() {
     private val homeViewModel: HomeViewModel by activityViewModels()
     private val sharedViewModel: SavedSharedViewModel by activityViewModels()
     private val homeAdapter = HomeAdapter()
+    val commonModelList = mutableListOf<HomeCommonModel>()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,16 +34,34 @@ class HomeFragment : Fragment() {
         binding.parentRecyclerViewHome.layoutManager = LinearLayoutManager(requireContext())
         binding.parentRecyclerViewHome.adapter = homeAdapter
 
-        homeViewModel.addPost()
-        homeViewModel.getPost()
+//        homeViewModel.addStory(Story(0, R.drawable.monkey))
 
-        homeAdapter.onSavedClicked_HomeAdapter = { postItem ->
-            Toast.makeText(requireContext(), "Saved", Toast.LENGTH_SHORT).show()
-            sharedViewModel.getUserWholePost(postItem)
+        homeViewModel.getPost().observe(viewLifecycleOwner) { homePostList ->
+            homeViewModel.getStory().observe(viewLifecycleOwner) { homeStoryList ->
+
+                if (homeStoryList.any {
+                        it is Story
+                    }) {
+                    val list: ArrayList<Story> = arrayListOf()
+                    homeStoryList.map {
+                        list.add(it)
+
+                    }
+
+                    commonModelList.add(HomeCommonModel.StoryModelItem(list))
+                }
+
+                commonModelList.addAll(homePostList.map {
+                    HomeCommonModel.PostModelItem(it)
+                })
+
+                homeAdapter.submitList(commonModelList)
+            }
         }
-        homeViewModel.getLiveData.observe(viewLifecycleOwner) {
-            Log.d("TAG", "HomeFragmentList: $it")
-            homeAdapter.submitList(it)
+
+        homeAdapter.onSavedClickedHomeAdapter = { postItem ->
+            Toast.makeText(requireContext(), "Saved", Toast.LENGTH_SHORT).show()
+            sharedViewModel.getUserPost(postItem)
         }
 
         return binding.root

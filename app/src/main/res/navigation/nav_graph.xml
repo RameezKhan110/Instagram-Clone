@@ -16,6 +16,15 @@
         <action
             android:id="@+id/action_homeFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_createPostFragment"
+            app:destination="@id/createPostFragment" />
+        <action
+            android:id="@+id/action_homeFragment_self"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_createStoryFragment"
+            app:destination="@id/createStoryFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -93,5 +102,23 @@
         <action
             android:id="@+id/action_tagPostsFragment_to_postDetailFragment"
             app:destination="@id/postDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createPostFragment"
+        android:name="com.example.testing.home.CreatePostFragment"
+        android:label="Create Post"
+        tools:layout="@layout/fragment_create_post" >
+        <action
+            android:id="@+id/action_createPostFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createStoryFragment"
+        android:name="com.example.testing.home.CreateStoryFragment"
+        android:label="Create Story"
+        tools:layout="@layout/fragment_create_story" >
+        <action
+            android:id="@+id/action_createStoryFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
 </navigation>

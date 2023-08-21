@@ -8,7 +8,7 @@
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:id="@+id/userStory"
+        android:id="@+id/userStoryImageView"
         android:layout_margin="10dp"
         android:src="@drawable/flower"
         app:layout_constraintBottom_toBottomOf="parent"

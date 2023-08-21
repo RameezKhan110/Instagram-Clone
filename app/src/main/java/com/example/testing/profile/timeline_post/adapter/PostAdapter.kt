@@ -4,12 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testing.databinding.PostSampleItemBinding
-import com.example.testing.profile.timeline_post.model.PostModel
+import com.example.testing.profile.timeline_post.model.PostModels
 
 class PostAdapter: RecyclerView.Adapter<PostAdapter.PostAdapterViewHolder>() {
 
-    var postsList: List<PostModel> = arrayListOf()
-    lateinit var onTimeLinePostClicked: (PostModel) -> Unit
+    var postsList: List<PostModels> = arrayListOf()
+    lateinit var onTimeLinePostClicked: (PostModels) -> Unit
 
     inner class PostAdapterViewHolder(binding: PostSampleItemBinding): RecyclerView.ViewHolder(binding.root)
 

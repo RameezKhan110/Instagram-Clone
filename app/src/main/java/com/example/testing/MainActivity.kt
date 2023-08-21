@@ -1,19 +1,23 @@
 package com.example.testing
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import androidx.appcompat.app.AlertDialog
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.testing.databinding.ActivityMainBinding
+import com.example.testing.home.HomeFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    lateinit var  navController: NavController
+    lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,21 +34,23 @@ class MainActivity : AppCompatActivity() {
         val appBarConfiguration = AppBarConfiguration(
             setOf
                 (
-                R.id.homeFragment
-                ,R.id.searchFragment
-                ,R.id.profileFragment
-            ))
+                R.id.homeFragment, R.id.createPostFragment, R.id.searchFragment, R.id.profileFragment, R.id.createStoryFragment
+            )
+        )
 
         binding.bottomNavigationView.setupWithNavController(navController)
 
-        binding.bottomNavigationView.setOnItemSelectedListener ()
-        {
-            when(it.itemId)
-            {
-                R.id.home ->
-                {
+        binding.bottomNavigationView.setOnItemSelectedListener {
+            Log.d("TAG", "Calling Select Item Listener")
+            when (it.itemId) {
+                R.id.home -> {
                     navController.navigate(R.id.homeFragment)
                 }
+
+                R.id.createPost -> {
+                    showCreateDialog(this)
+                }
+
                 R.id.search -> {
                     navController.navigate(R.id.searchFragment)
                 }
@@ -52,6 +58,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.profile -> {
                     navController.navigate(R.id.profileFragment)
                 }
+
+
+
                 else -> {
 
                 }
@@ -60,8 +69,44 @@ class MainActivity : AppCompatActivity() {
 
             return@setOnItemSelectedListener true
         }
-        setupActionBarWithNavController(navController,appBarConfiguration)
 
+        binding.bottomNavigationView.selectedItemId = R.id.home
+
+//        setupActionBarWithNavController(navController, appBarConfiguration)
+
+    }
+
+
+    fun showCreateDialog(context: Context) {
+        val options = arrayOf("Create Story", "Create Post")
+
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Choose Creation")
+        builder.setItems(options) { _, which ->
+            when (which) {
+                0 -> {
+                    navController.navigate(R.id.createStoryFragment)
+                }
+                1 -> {
+                    navController.navigate(R.id.createPostFragment)
+                }
+            }
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    override fun onBackPressed() {
+
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
+
+        if(currentFragment !is HomeFragment) {
+//            navController.navigate(R.id.homeFragment)
+            binding.bottomNavigationView.selectedItemId = R.id.home
+        } else {
+            finish()
+        }
     }
 
 }

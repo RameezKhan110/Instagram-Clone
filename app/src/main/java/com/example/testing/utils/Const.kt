@@ -1,4 +1,4 @@
-package com.example.testing.home
+package com.example.testing.utils
 
 object Const {
     const val STORY = 1

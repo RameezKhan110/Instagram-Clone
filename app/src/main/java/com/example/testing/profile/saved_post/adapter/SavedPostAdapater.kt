@@ -3,14 +3,16 @@ package com.example.testing.profile.saved_post.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testing.R
 import com.example.testing.databinding.SampleItemBinding
 import com.example.testing.home.model.PostModel
+import com.example.testing.home.room.post.Home
 import com.example.testing.utils.DoubleClickListener
 
-class MySavedPostAdapter : ListAdapter<PostModel, MySavedPostAdapter.MySavedPostViewHolder>(DiffUtil()){
+class MySavedPostAdapter : ListAdapter<Home, MySavedPostAdapter.MySavedPostViewHolder>(DiffUtil()){
 
     lateinit var onUnSaveClicked: (PostModel) -> Unit
 
@@ -30,8 +32,8 @@ class MySavedPostAdapter : ListAdapter<PostModel, MySavedPostAdapter.MySavedPost
 
             userName.text = savedPostItems.userName
             userLocation.text = savedPostItems.userLocation
-            userImage.setImageResource(savedPostItems.userImage)
-            userPost.setImageResource(savedPostItems.userPost)
+            userImage.setImageURI(savedPostItems.userImage.toUri())
+            userPost.setImageURI(savedPostItems.userPost.toUri())
 
 
             if (savedPostItems.isLike) {
@@ -46,7 +48,7 @@ class MySavedPostAdapter : ListAdapter<PostModel, MySavedPostAdapter.MySavedPost
 
             save.setOnClickListener {
                 savedPostItems.isSave = false
-                onUnSaveClicked(savedPostItems)
+//                onUnSaveClicked(savedPostItems)
             }
 
             like.setOnClickListener {
@@ -65,13 +67,13 @@ class MySavedPostAdapter : ListAdapter<PostModel, MySavedPostAdapter.MySavedPost
 
     }
 
-    class DiffUtil: androidx.recyclerview.widget.DiffUtil.ItemCallback<PostModel>() {
-        override fun areItemsTheSame(oldItem: PostModel, newItem: PostModel): Boolean {
-            return oldItem.postId == newItem.postId
+    class DiffUtil: androidx.recyclerview.widget.DiffUtil.ItemCallback<Home>() {
+        override fun areItemsTheSame(oldItem: Home, newItem: Home): Boolean {
+            return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: PostModel, newItem: PostModel): Boolean {
-            return oldItem.equals(newItem)
+        override fun areContentsTheSame(oldItem: Home, newItem: Home): Boolean {
+            return oldItem == (newItem)
         }
     }
 }

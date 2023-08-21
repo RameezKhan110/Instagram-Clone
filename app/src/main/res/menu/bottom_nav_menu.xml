@@ -9,6 +9,13 @@
     </item>
 
     <item
+        android:title="Create"
+        android:icon="@drawable/baseline_add_24"
+        android:id="@+id/createPost">
+
+    </item>
+
+    <item
         android:title="Search"
         android:icon="@drawable/baseline_search_24"
         android:id="@+id/search">
@@ -20,6 +27,8 @@
         android:id="@+id/profile">
 
     </item>
+
+
 
 
 </menu>

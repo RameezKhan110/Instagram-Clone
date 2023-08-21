@@ -1,33 +1,36 @@
 package com.example.testing.home.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testing.R
 import com.example.testing.databinding.SampleItemBinding
 import com.example.testing.home.model.PostModel
+import com.example.testing.home.room.post.Home
 import com.example.testing.utils.DoubleClickListener
 
-class PostAdapter: ListAdapter<PostModel, RecyclerView.ViewHolder>(DiffUtil()){
+class PostAdapter : ListAdapter<Home, RecyclerView.ViewHolder>(PostDiffUtil()) {
 
-    lateinit var onSaveClicked: (PostModel) -> Unit
+    var onSaveClicked: ((Home) -> Unit)? = null
 
-    inner class PostViewHolder(postBinding: SampleItemBinding): RecyclerView.ViewHolder(postBinding.root)
+    inner class PostViewHolder(postBinding: SampleItemBinding) :
+        RecyclerView.ViewHolder(postBinding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val viewHolder = SampleItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val viewHolder =
+            SampleItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PostViewHolder(viewHolder)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val postItems = getItem(position)
         SampleItemBinding.bind(holder.itemView).apply {
-            userImage.setImageResource(postItems.userImage)
+            userImage.setImageURI(postItems.userImage.toUri())
+            userPost.setImageURI(postItems.userPost.toUri())
             userLocation.text = postItems.userLocation
-            userPost.setImageResource(postItems.userPost)
             userName.text = postItems.userName
 
             if (postItems.isLike) {
@@ -65,23 +68,20 @@ class PostAdapter: ListAdapter<PostModel, RecyclerView.ViewHolder>(DiffUtil()){
                 if (!postItems.isSave) {
                     postItems.isSave = true
                     save.setImageResource(R.drawable.bookmark)
-                    onSaveClicked(postItems)
+                    onSaveClicked?.invoke(postItems)
                 }
 
             }
-
-        }
         }
     }
+}
 
-
-
-    class DiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<PostModel>() {
-        override fun areItemsTheSame(oldItem: PostModel, newItem: PostModel): Boolean {
-            return oldItem.postId == newItem.postId
-        }
-
-        override fun areContentsTheSame(oldItem: PostModel, newItem: PostModel): Boolean {
-            return oldItem == newItem
-        }
+class PostDiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<Home>() {
+    override fun areItemsTheSame(oldItem: Home, newItem: Home): Boolean {
+        return oldItem.id == newItem.id
     }
+
+    override fun areContentsTheSame(oldItem: Home, newItem: Home): Boolean {
+        return oldItem == newItem
+    }
+}
