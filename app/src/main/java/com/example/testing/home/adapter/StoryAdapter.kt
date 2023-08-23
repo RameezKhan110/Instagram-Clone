@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.testing.R
 import com.example.testing.databinding.HomeStoriesBinding
 import com.example.testing.home.room.post.story.Story
 
@@ -21,7 +22,11 @@ class StoryAdapter: ListAdapter<Story, RecyclerView.ViewHolder>(StoryDiffUtil())
         val storyItems = getItem(position)
 
         HomeStoriesBinding.bind(holder.itemView).apply {
-            userStoryImageView.setImageURI(storyItems.story.toUri())
+            if(storyItems.story.isEmpty()) {
+                userStoryImageView.setImageResource(R.drawable.placeholder)
+            } else {
+                userStoryImageView.setImageURI(storyItems.story.toUri())
+            }
         }
     }
 

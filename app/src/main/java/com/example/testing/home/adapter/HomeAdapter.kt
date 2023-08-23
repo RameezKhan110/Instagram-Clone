@@ -59,23 +59,7 @@ class HomeAdapter :
                 LinearLayoutManager(postBinding.root.context, LinearLayoutManager.VERTICAL, false)
             postBinding.postRV.adapter = postAdapter
 
-            when (postItem) {
-                is Resource.Error -> {
-                    postBinding.progressBar2.visibility = View.GONE
-                    postBinding.postRV.visibility = View.VISIBLE
-                }
-                is Resource.Loading -> {
-                    postBinding.progressBar2.visibility = View.VISIBLE
-                    postBinding.postRV.visibility = View.GONE
-                }
-                is Resource.Success -> {
-                    postBinding.progressBar2.visibility = View.GONE
-                    postBinding.postRV.visibility = View.VISIBLE
-                    Log.d("TAG", "postItem: " +postItem.data)
-                    postAdapter.submitList(postItem.data)
-
-                }
-            }
+            postAdapter.submitList(postItem.data)
             postAdapter.onSaveClicked = {
                 onSavedClickedHomeAdapter?.invoke(it)
             }

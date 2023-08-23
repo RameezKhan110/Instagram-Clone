@@ -38,13 +38,25 @@ class HomeFragment : Fragment() {
 
 
         Log.d("TAG", "onCreateView: ")
+//        homeViewModel.getApiPosts()
+
 
         homeViewModel.livePostLists.observe(viewLifecycleOwner) { homePostList ->
+            homeViewModel.getStory().observe(viewLifecycleOwner) { homeStoryList ->
 
-            homePostList?.let {
-                if(it is Resource.Success){
-                    homeViewModel.getStory().observe(viewLifecycleOwner) { homeStoryList ->
+                when (homePostList) {
+                    is Resource.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                        binding.parentRecyclerViewHome.visibility = View.VISIBLE
+                    }
 
+                    is Resource.Loading -> {
+                        Log.d("TAG", "Loading State")
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.parentRecyclerViewHome.visibility = View.GONE
+                    }
+
+                    is Resource.Success -> {
                         if (homeStoryList.any {
                                 it is Story
                             }) {
@@ -53,24 +65,24 @@ class HomeFragment : Fragment() {
                                 list.add(it)
                             }
 
-                            commonModelList.add(HomeCommonModel.PostModelItem(homePostList))
+                            commonModelList.add(HomeCommonModel.StoryModelItem(homeStoryList))
                         }
-//                commonModelList.addAll(homePostList.map {
-//                    HomeCommonModel.PostModelItem(it)
-//                })
                         Log.d("TAG", "Home Posts: $homePostList")
                         commonModelList.add(HomeCommonModel.PostModelItem(homePostList))
 
+                        binding.progressBar.visibility = View.GONE
+                        binding.parentRecyclerViewHome.visibility = View.VISIBLE
+                        Log.d("TAG", "postItem: " + homePostList.data)
+
                         homeAdapter.submitList(commonModelList)
+
                     }
                 }
-                else {
-//                    Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
-                }
+
+
             }
         }
 
-        homeViewModel.getApiPosts()
 
         homeAdapter.onSavedClickedHomeAdapter = { postItem ->
             Toast.makeText(requireContext(), "Saved", Toast.LENGTH_SHORT).show()

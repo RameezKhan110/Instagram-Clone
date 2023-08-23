@@ -25,14 +25,18 @@ class HomeViewModel : ViewModel() {
     val livePostLists: LiveData<Resource<List<Wallpapers>>>
         get() = mutablePostList
 
-    fun getApiPosts() = viewModelScope.launch(Dispatchers.IO) {
+    init {
+        getApiPosts()
+    }
+
+    fun getApiPosts() = viewModelScope.launch {
+        Log.d("TAG", "api called")
         mutablePostList.postValue(Resource.Loading(null))
-        Log.e("TAG","api called")
-        val result = homeRepository.getApiPosts()
         try {
+            val result = homeRepository.getApiPosts()
             mutablePostList.postValue(Resource.Success(result))
-        } catch (e: Exception) {
-            mutablePostList.postValue(e.message?.let {
+        } catch (t: Throwable) {
+            mutablePostList.postValue(t.localizedMessage?.let {
                 Resource.Error(it, null)
             })
         }

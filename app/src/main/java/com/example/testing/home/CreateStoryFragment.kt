@@ -12,6 +12,7 @@ import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.example.testing.MainActivity
 import com.example.testing.R
 import com.example.testing.databinding.FragmentCreateStoryBinding
 import com.example.testing.home.room.post.story.Story
@@ -33,7 +34,7 @@ class CreateStoryFragment : Fragment() {
         binding.uploadStoryBtn.setOnClickListener {
             homeViewModel.addStory(Story(0, userStory))
             Toast.makeText(requireContext(), "Posted", Toast.LENGTH_SHORT).show()
-            findNavController().navigate(R.id.action_createStoryFragment_to_homeFragment)
+            (requireActivity() as MainActivity).binding.bottomNavigationView.selectedItemId = R.id.home
         }
 
         binding.guideTextStory.setOnClickListener {

@@ -16,7 +16,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,14 +29,6 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         navController = navHostFragment.navController
-
-
-        val appBarConfiguration = AppBarConfiguration(
-            setOf
-                (
-                R.id.homeFragment, R.id.createPostFragment, R.id.searchFragment, R.id.profileFragment, R.id.createStoryFragment
-            )
-        )
 
         binding.bottomNavigationView.setupWithNavController(navController)
 
