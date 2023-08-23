@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.setupWithNavController(navController)
 
         binding.bottomNavigationView.setOnItemSelectedListener {
-            Log.d("TAG", "Calling Select Item Listener")
             when (it.itemId) {
                 R.id.home -> {
                     navController.navigate(R.id.homeFragment)
@@ -70,7 +69,7 @@ class MainActivity : AppCompatActivity() {
             return@setOnItemSelectedListener true
         }
 
-        binding.bottomNavigationView.selectedItemId = R.id.home
+//        binding.bottomNavigationView.selectedItemId = R.id.home
 
 //        setupActionBarWithNavController(navController, appBarConfiguration)
 
@@ -107,6 +106,11 @@ class MainActivity : AppCompatActivity() {
         } else {
             finish()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding == null
     }
 
 }

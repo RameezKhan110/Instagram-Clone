@@ -2,34 +2,57 @@ package com.example.testing.home.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.testing.api.PostApiService
 import com.example.testing.home.repository.HomeRepository
-import com.example.testing.home.room.post.Home
-import com.example.testing.home.room.post.HomeDatabase
 import com.example.testing.home.room.post.story.Story
 import com.example.testing.home.room.post.story.StoryDatabase
+import com.example.testing.model.Urls
+import com.example.testing.model.Wallpapers
+import com.example.testing.utils.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
 
-    val postDao = HomeDatabase.getDatabase().homeDao()
+    val postApiService: PostApiService = PostApiService
     val storyDao = StoryDatabase.getDatabase().storyDao()
-    val homeRepository = HomeRepository(postDao, storyDao)
+    val homeRepository = HomeRepository(postApiService, storyDao)
 
-    fun addPost(post: Home) = viewModelScope.launch(Dispatchers.IO) {
-        homeRepository.addPost(post)
-    }
+    private val mutablePostList: MutableLiveData<Resource<List<Wallpapers>>> = MutableLiveData()
+    val livePostLists: LiveData<Resource<List<Wallpapers>>>
+        get() = mutablePostList
 
-    fun getPost(): LiveData<List<Home>> {
-        Log.d("TAG", "get Post View Model: " + homeRepository.getPost())
-        return homeRepository.getPost()
+    fun getApiPosts() = viewModelScope.launch(Dispatchers.IO) {
+        mutablePostList.postValue(Resource.Loading(null))
+        Log.e("TAG","api called")
+        val result = homeRepository.getApiPosts()
+        try {
+            mutablePostList.postValue(Resource.Success(result))
+        } catch (e: Exception) {
+            mutablePostList.postValue(e.message?.let {
+                Resource.Error(it, null)
+            })
+        }
     }
+//    val postDao = HomeDatabase.getDatabase().homeDao()
+//    val storyDao = StoryDatabase.getDatabase().storyDao()
+//    val homeRepository = HomeRepository(postDao, storyDao)
 
-    fun deleteTable() = viewModelScope.launch(Dispatchers.IO) {
-        homeRepository.deleteTable()
-    }
+//    fun addPost(post: Home) = viewModelScope.launch(Dispatchers.IO) {
+//        homeRepository.addPost(post)
+//    }
+//
+//    fun getPost(): LiveData<List<Home>> {
+//        Log.d("TAG", "get Post View Model: " + homeRepository.getPost())
+//        return homeRepository.getPost()
+//    }
+//
+//    fun deleteTable() = viewModelScope.launch(Dispatchers.IO) {
+//        homeRepository.deleteTable()
+//    }
 
     fun addStory(story: Story) = viewModelScope.launch {
         homeRepository.addStory(story)

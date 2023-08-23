@@ -63,23 +63,23 @@ class CreatePostFragment : Fragment() {
             )
         }
 
-        binding.uploadPostBtn.setOnClickListener {
-            val userName = binding.userName.text.toString()
-            val userLocation = binding.userLocation.text.toString()
-
-            if (userName.isEmpty()) {
-                binding.textInputUsername.setCustomColor("Username can't empty")
-
-            } else if (userLocation.isEmpty()) {
-                binding.textInputLocation.setCustomColor("Location can't be empty")
-
-            } else {
-                homeViewModel.addPost(Home(0, userImage, userLocation, userName, userPost, false, false))
-                Toast.makeText(requireContext(), "Posted", Toast.LENGTH_SHORT).show()
-                findNavController().navigate(R.id.action_createPostFragment_to_homeFragment)
-            }
-
-        }
+//        binding.uploadPostBtn.setOnClickListener {
+//            val userName = binding.userName.text.toString()
+//            val userLocation = binding.userLocation.text.toString()
+//
+//            if (userName.isEmpty()) {
+//                binding.textInputUsername.setCustomColor("Username can't empty")
+//
+//            } else if (userLocation.isEmpty()) {
+//                binding.textInputLocation.setCustomColor("Location can't be empty")
+//
+//            } else {
+//                homeViewModel.addPost(Home(0, userImage, userLocation, userName, userPost, false, false))
+//                Toast.makeText(requireContext(), "Posted", Toast.LENGTH_SHORT).show()
+//                findNavController().navigate(R.id.action_createPostFragment_to_homeFragment)
+//            }
+//
+//        }
         return binding.root
     }
 
