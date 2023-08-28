@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/grp1"
+            android:title="Details">
+
+            <menu>
+
+                <item
+                    android:id="@+id/myAccount"
+                    android:icon="@drawable/baseline_person_24"
+                    android:title="Account Details">
+
+                </item>
+
+                <item
+                    android:id="@+id/favourites"
+                    android:icon="@drawable/favourite"
+                    android:title="Favourites">
+
+                </item>
+
+                <item
+                    android:id="@+id/trash"
+                    android:icon="@drawable/trashbin"
+                    android:title="Trash">
+
+                </item>
+
+
+                <item
+                    android:id="@+id/settings"
+                    android:icon="@drawable/settings"
+                    android:title="Settings">
+
+                </item>
+
+
+            </menu>
+
+
+        </item>
+
+        <item
+            android:title="Logout"
+            android:id="@+id/grp2">
+
+            <menu>
+
+                <item
+                    android:title="Logout"
+                    android:id="@+id/logout"
+                    android:icon="@drawable/logout">
+
+                </item>
+            </menu>
+        </item>
+
+
+
+    </group>
+
+</menu>

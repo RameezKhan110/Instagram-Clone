@@ -25,6 +25,10 @@
         <action
             android:id="@+id/action_homeFragment_to_createStoryFragment"
             app:destination="@id/createStoryFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_postDetailFragment"
+            app:destination="@id/postDetailFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -75,7 +79,11 @@
         android:id="@+id/postDetailFragment"
         android:name="com.example.testing.search.post_detail.PostDetailFragment"
         android:label="Detail"
-        tools:layout="@layout/fragment_detail" />
+        tools:layout="@layout/fragment_detail" >
+        <action
+            android:id="@+id/action_postDetailFragment_to_homeFragment2"
+            app:destination="@id/homeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/postsFragment"
         android:name="com.example.testing.profile.timeline_post.PostsFragment"

@@ -24,6 +24,7 @@ class HomeAdapter :
 
     var onSavedClickedHomeAdapter: ((Home) -> Unit)? = null
     private val positionList = SparseIntArray()
+    var onPostClickedHomeAdapter: ((Wallpapers) -> Unit)? = null
 
 
     override fun getItemViewType(position: Int): Int {
@@ -62,6 +63,10 @@ class HomeAdapter :
             postAdapter.submitList(postItem.data)
             postAdapter.onSaveClicked = {
                 onSavedClickedHomeAdapter?.invoke(it)
+            }
+
+            postAdapter.onPostClicked = {
+                onPostClickedHomeAdapter?.invoke(it)
             }
 
 

@@ -1,6 +1,7 @@
 package com.example.testing.search
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,11 +45,17 @@ class SearchFragment : Fragment() {
         })
 
         searchAdapter.onSearchPostClicked = {
-            postDetailSharedViewModel.getUserPost(it)
-            findNavController().navigate(R.id.action_searchFragment_to_postDetailFragment)
+//            postDetailSharedViewModel.getUserPost(it)
+            Log.d("TAG", "Search Fragment: " + it)
+            val searchPostBundle = Bundle()
+            searchPostBundle.putInt("Search_User_Image", it.userImage)
+            searchPostBundle.putInt("Search_User_Post", it.userPost)
+            searchPostBundle.putString("Search_User_Name", it.userName)
+            searchPostBundle.putString("Search_User_Location", it.userLocation)
+            searchPostBundle.putBoolean("Search_Check_Click", true)
+
+            findNavController().navigate(R.id.action_searchFragment_to_postDetailFragment, searchPostBundle)
         }
-
-
 
         return binding.root
     }

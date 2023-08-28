@@ -28,13 +28,13 @@ class SearchAdapter: RecyclerView.Adapter<SearchAdapter.SearchAdapterViewHolder>
 
     override fun onBindViewHolder(holder: SearchAdapterViewHolder, position: Int) {
 
-        val listItem = userPost[position]
+        val searchPostItem = userPost[position]
 
         SearchSampleItemBinding.bind(holder.itemView).apply {
-            searchPosts.setImageResource(listItem.userPost)
+            searchPosts.setImageResource(searchPostItem.userPost)
 
             searchPosts.setOnClickListener {
-                onSearchPostClicked(listItem)
+                onSearchPostClicked(searchPostItem)
             }
         }
     }

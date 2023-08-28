@@ -1,29 +1,35 @@
 package com.example.testing.home
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.testing.MainActivity
+import com.example.testing.R
 import com.example.testing.databinding.FragmentHomeBinding
 import com.example.testing.home.adapter.HomeAdapter
 import com.example.testing.home.room.post.HomeCommonModel
 import com.example.testing.home.room.post.story.Story
 import com.example.testing.home.viewmodel.HomeViewModel
 import com.example.testing.profile.saved_post.viewmodel.SavedSharedViewModel
+import com.example.testing.search.post_detail.PostDetailFragment
 import com.example.testing.utils.Resource
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), MainActivity.onBackPressedCallback {
 
     private lateinit var binding: FragmentHomeBinding
     private val homeViewModel: HomeViewModel by activityViewModels()
     private val sharedViewModel: SavedSharedViewModel by activityViewModels()
     private val homeAdapter = HomeAdapter()
-    val commonModelList = mutableListOf<HomeCommonModel>()
+    private val commonModelList = mutableListOf<HomeCommonModel>()
 
 
     override fun onCreateView(
@@ -36,11 +42,7 @@ class HomeFragment : Fragment() {
         binding.parentRecyclerViewHome.layoutManager = LinearLayoutManager(requireContext())
         binding.parentRecyclerViewHome.adapter = homeAdapter
 
-
-        Log.d("TAG", "onCreateView: ")
-//        homeViewModel.getApiPosts()
-
-
+        homeViewModel.getApiPosts()
         homeViewModel.livePostLists.observe(viewLifecycleOwner) { homePostList ->
             homeViewModel.getStory().observe(viewLifecycleOwner) { homeStoryList ->
 
@@ -83,18 +85,28 @@ class HomeFragment : Fragment() {
             }
         }
 
-
         homeAdapter.onSavedClickedHomeAdapter = { postItem ->
             Toast.makeText(requireContext(), "Saved", Toast.LENGTH_SHORT).show()
             sharedViewModel.getUserPost(postItem)
         }
 
+        homeAdapter.onPostClickedHomeAdapter = { postItem ->
+            Log.d("TAG", "HomeFragment PostItem: " + postItem)
+            val postBundle = Bundle()
+            postBundle.putString("User_Image", postItem.urls.raw)
+            postBundle.putString("User_Post", postItem.urls.full)
+            postBundle.putBoolean("Check_Click", true)
+            findNavController().navigate(R.id.action_homeFragment_to_postDetailFragment, postBundle)
+        }
         return binding.root
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
         binding == null
+    }
+
+    override fun onBackPressed() {
+        requireActivity().finish()
     }
 }

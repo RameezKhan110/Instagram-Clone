@@ -19,6 +19,7 @@ import com.example.testing.model.Wallpapers
 class PostAdapter : ListAdapter<Wallpapers, RecyclerView.ViewHolder>(PostDiffUtil()) {
 
     var onSaveClicked: ((Home) -> Unit)? = null
+    var onPostClicked: ((Wallpapers) -> Unit)? = null
 
     inner class PostViewHolder(postBinding: SampleItemBinding) :
         RecyclerView.ViewHolder(postBinding.root)
@@ -58,12 +59,17 @@ class PostAdapter : ListAdapter<Wallpapers, RecyclerView.ViewHolder>(PostDiffUti
                         isFirstResource: Boolean
                     ): Boolean {
                         progressBar2.setVisibility(View.GONE)
+                        userPost.setOnClickListener {
+                            onPostClicked?.invoke(postItems)
+                        }
                         return false
                     }
                 })
                 .into(userPost)
             userLocation.text = "Hyderabad"
             userName.text = "Rameez Khan"
+
+
 
 //            userImage.setImageURI(postItems.userImage.toUri())
 //            userPost.setImageURI(postItems.userPost.toUri())
