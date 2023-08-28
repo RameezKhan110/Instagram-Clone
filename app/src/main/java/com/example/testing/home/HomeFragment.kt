@@ -23,6 +23,7 @@ import com.example.testing.home.viewmodel.HomeViewModel
 import com.example.testing.profile.saved_post.viewmodel.SavedSharedViewModel
 import com.example.testing.search.post_detail.PostDetailFragment
 import com.example.testing.utils.Resource
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 class HomeFragment : Fragment() {
 
@@ -31,7 +32,6 @@ class HomeFragment : Fragment() {
     private val sharedViewModel: SavedSharedViewModel by activityViewModels()
     private val homeAdapter = HomeAdapter()
     private val commonModelList = mutableListOf<HomeCommonModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleBackPress()

@@ -11,19 +11,18 @@ class ReelsRepository {
 
         if (reelsItem.isEmpty()) {
 
-            reelsItem.add(ReelsModel(R.drawable.vulture))
-            reelsItem.add(ReelsModel(R.drawable.vulture))
-            reelsItem.add(ReelsModel(R.drawable.vulture))
-            reelsItem.add(ReelsModel(R.drawable.vulture))
-            reelsItem.add(ReelsModel(R.drawable.vulture))
-            reelsItem.add(ReelsModel(R.drawable.vulture))
-            reelsItem.add(ReelsModel(R.drawable.vulture))
-            reelsItem.add(ReelsModel(R.drawable.vulture))
-            reelsItem.add(ReelsModel(R.drawable.vulture))
-            reelsItem.add(ReelsModel(R.drawable.vulture))
-            reelsItem.add(ReelsModel(R.drawable.vulture))
-            reelsItem.add(ReelsModel(R.drawable.vulture))
-            reelsItem.add(ReelsModel(R.drawable.vulture))
+            reelsItem.add(ReelsModel(R.drawable.monkey))
+            reelsItem.add(ReelsModel(R.drawable.monkey))
+            reelsItem.add(ReelsModel(R.drawable.monkey))
+            reelsItem.add(ReelsModel(R.drawable.monkey))
+            reelsItem.add(ReelsModel(R.drawable.monkey))
+            reelsItem.add(ReelsModel(R.drawable.monkey))
+            reelsItem.add(ReelsModel(R.drawable.monkey))
+            reelsItem.add(ReelsModel(R.drawable.monkey))
+            reelsItem.add(ReelsModel(R.drawable.monkey))
+            reelsItem.add(ReelsModel(R.drawable.monkey))
+            reelsItem.add(ReelsModel(R.drawable.monkey))
+
         }
     }
 
