@@ -25,9 +25,9 @@ class HomeViewModel : ViewModel() {
     val livePostLists: LiveData<Resource<List<Wallpapers>>>
         get() = mutablePostList
 
-//    init {
-//        getApiPosts()
-//    }
+    init {
+        getApiPosts()
+    }
 
     fun getApiPosts() = viewModelScope.launch {
         Log.d("TAG", "api called")

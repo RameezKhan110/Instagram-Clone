@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -23,7 +24,7 @@ import com.example.testing.profile.saved_post.viewmodel.SavedSharedViewModel
 import com.example.testing.search.post_detail.PostDetailFragment
 import com.example.testing.utils.Resource
 
-class HomeFragment : Fragment(), MainActivity.onBackPressedCallback {
+class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private val homeViewModel: HomeViewModel by activityViewModels()
@@ -31,6 +32,10 @@ class HomeFragment : Fragment(), MainActivity.onBackPressedCallback {
     private val homeAdapter = HomeAdapter()
     private val commonModelList = mutableListOf<HomeCommonModel>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        handleBackPress()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,7 +47,6 @@ class HomeFragment : Fragment(), MainActivity.onBackPressedCallback {
         binding.parentRecyclerViewHome.layoutManager = LinearLayoutManager(requireContext())
         binding.parentRecyclerViewHome.adapter = homeAdapter
 
-        homeViewModel.getApiPosts()
         homeViewModel.livePostLists.observe(viewLifecycleOwner) { homePostList ->
             homeViewModel.getStory().observe(viewLifecycleOwner) { homeStoryList ->
 
@@ -69,13 +73,10 @@ class HomeFragment : Fragment(), MainActivity.onBackPressedCallback {
 
                             commonModelList.add(HomeCommonModel.StoryModelItem(homeStoryList))
                         }
-                        Log.d("TAG", "Home Posts: $homePostList")
                         commonModelList.add(HomeCommonModel.PostModelItem(homePostList))
 
                         binding.progressBar.visibility = View.GONE
                         binding.parentRecyclerViewHome.visibility = View.VISIBLE
-                        Log.d("TAG", "postItem: " + homePostList.data)
-
                         homeAdapter.submitList(commonModelList)
 
                     }
@@ -106,7 +107,14 @@ class HomeFragment : Fragment(), MainActivity.onBackPressedCallback {
         binding == null
     }
 
-    override fun onBackPressed() {
-        requireActivity().finish()
+    private fun handleBackPress(){
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    requireActivity().finishAffinity()
+                }
+            }
+        )
     }
 }

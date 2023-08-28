@@ -156,21 +156,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        super.onBackPressed()
 
-        val currentFragment = supportFragmentManager.findFragmentByTag("HomeFragment")
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.home)
         Log.d("TAG", "current Fragment: " + currentFragment)
         if (currentFragment !is HomeFragment) {
             Log.d("TAG", "onBackPressed: ")
             binding.bottomNavigationView.selectedItemId = R.id.home
-        } else {
-            (currentFragment as onBackPressedCallback).onBackPressed()
-            super.onBackPressed()
 
+//        } else {
+//            (currentFragment as onBackPressedCallback).onBackPressed()
+//            super.onBackPressed()
+//
+//        }
         }
     }
-    interface onBackPressedCallback {
-        fun onBackPressed()
-    }
+
+//    interface onBackPressedCallback {
+//        fun onBackPressed()
+//    }
     override fun onDestroy() {
         super.onDestroy()
         binding == null
