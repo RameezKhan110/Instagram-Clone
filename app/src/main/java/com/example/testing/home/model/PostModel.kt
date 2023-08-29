@@ -1,11 +1,10 @@
 package com.example.testing.home.model
 
+import android.net.Uri
+
 data class PostModel(
-    val postId: Int,
-    val userImage: Int,
-    val userName: String,
-    val userLocation: String,
-    val userPost: Int,
-    var isLike: Boolean,
-    var isSave: Boolean
+    val userPost: String,
+    val userImage: String?,
+    val userName: String?,
+    val userLocation: String?
 )

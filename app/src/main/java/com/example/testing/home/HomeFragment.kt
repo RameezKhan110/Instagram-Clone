@@ -8,22 +8,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.testing.MainActivity
 import com.example.testing.R
+import com.example.testing.auth.viewmodel.AuthViewModel
 import com.example.testing.databinding.FragmentHomeBinding
 import com.example.testing.home.adapter.HomeAdapter
+import com.example.testing.home.model.PostModel
 import com.example.testing.home.room.post.HomeCommonModel
 import com.example.testing.home.room.post.story.Story
 import com.example.testing.home.viewmodel.HomeViewModel
 import com.example.testing.profile.saved_post.viewmodel.SavedSharedViewModel
-import com.example.testing.search.post_detail.PostDetailFragment
 import com.example.testing.utils.Resource
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 
 class HomeFragment : Fragment() {
 
@@ -32,6 +31,16 @@ class HomeFragment : Fragment() {
     private val sharedViewModel: SavedSharedViewModel by activityViewModels()
     private val homeAdapter = HomeAdapter()
     private val commonModelList = mutableListOf<HomeCommonModel>()
+    private val postList = mutableListOf<PostModel>()
+    private val authViewModel: AuthViewModel by activityViewModels()
+    var userImage: String = ""
+    var userName: String = ""
+    var userEmail: String = ""
+    var userId: Int = 0
+    override fun onResume() {
+        super.onResume()
+        activity?.actionBar?.title = "Home"
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleBackPress()
@@ -43,44 +52,62 @@ class HomeFragment : Fragment() {
     ): View? {
 
         binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
+        val account = GoogleSignIn.getLastSignedInAccount(requireContext())
 
         binding.parentRecyclerViewHome.layoutManager = LinearLayoutManager(requireContext())
         binding.parentRecyclerViewHome.adapter = homeAdapter
 
         homeViewModel.livePostLists.observe(viewLifecycleOwner) { homePostList ->
-            homeViewModel.getStory().observe(viewLifecycleOwner) { homeStoryList ->
+            authViewModel.getDataAsPerId(getUserEmailHome()).observe(viewLifecycleOwner) { userData ->
+                authViewModel.getUserId(getUserEmailHome()).observe(viewLifecycleOwner) {
+                    authViewModel.getStoryAsPerId(it).observe(viewLifecycleOwner) { userStory ->
 
-                when (homePostList) {
-                    is Resource.Error -> {
-                        binding.progressBar.visibility = View.GONE
-                        binding.parentRecyclerViewHome.visibility = View.VISIBLE
-                    }
+                        userData.forEach {
+                            userImage = it.userImage
+                            userEmail = it.userEmail
+                            userName = it.userName
+                            userId = it.userId
+                        }
 
-                    is Resource.Loading -> {
-                        Log.d("TAG", "Loading State")
-                        binding.progressBar.visibility = View.VISIBLE
-                        binding.parentRecyclerViewHome.visibility = View.GONE
-                    }
+                        homePostList.data?.map {
+                            postList.add(PostModel(it.urls.full, userImage, userName, userEmail))
+                        }
 
-                    is Resource.Success -> {
-                        if (homeStoryList.any {
-                                it is Story
-                            }) {
-                            val list: ArrayList<Story> = arrayListOf()
-                            homeStoryList.map {
-                                list.add(it)
+                        when (homePostList) {
+                            is Resource.Error -> {
+                                binding.progressBar.visibility = View.GONE
+                                binding.parentRecyclerViewHome.visibility = View.VISIBLE
                             }
 
-                            commonModelList.add(HomeCommonModel.StoryModelItem(homeStoryList))
+                            is Resource.Loading -> {
+                                Log.d("TAG", "Loading State")
+                                binding.progressBar.visibility = View.VISIBLE
+                                binding.parentRecyclerViewHome.visibility = View.GONE
+                            }
+
+                            is Resource.Success -> {
+                                if (userStory.any {
+                                        it is Story
+                                    }) {
+                                    val list: ArrayList<Story> = arrayListOf()
+                                    userStory.map {
+                                        list.add(it)
+                                    }
+
+                                    commonModelList.add(HomeCommonModel.StoryModelItem(list))
+                                }
+                                commonModelList.add(HomeCommonModel.PostModelItem(postList))
+
+                                binding.progressBar.visibility = View.GONE
+                                binding.parentRecyclerViewHome.visibility = View.VISIBLE
+                                homeAdapter.submitList(commonModelList)
+
+                            }
                         }
-                        commonModelList.add(HomeCommonModel.PostModelItem(homePostList))
-
-                        binding.progressBar.visibility = View.GONE
-                        binding.parentRecyclerViewHome.visibility = View.VISIBLE
-                        homeAdapter.submitList(commonModelList)
-
                     }
                 }
+
+
 
 
             }
@@ -101,6 +128,14 @@ class HomeFragment : Fragment() {
         }
         return binding.root
     }
+
+    private fun getUserEmailHome(): String {
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
+        val currentUserEmail = sharedPreferences.getString("username", null)
+        return currentUserEmail.toString()
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()

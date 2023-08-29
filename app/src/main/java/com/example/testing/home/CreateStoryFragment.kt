@@ -1,7 +1,9 @@
 package com.example.testing.home
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.testing.MainActivity
 import com.example.testing.R
+import com.example.testing.auth.viewmodel.AuthViewModel
 import com.example.testing.databinding.FragmentCreateStoryBinding
 import com.example.testing.home.room.post.story.Story
 import com.example.testing.home.viewmodel.HomeViewModel
@@ -24,6 +27,7 @@ class CreateStoryFragment : Fragment() {
     private lateinit var binding: FragmentCreateStoryBinding
     private var userStory: String = ""
     private val homeViewModel: HomeViewModel by activityViewModels()
+    private val authViewModel: AuthViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,9 +36,12 @@ class CreateStoryFragment : Fragment() {
         binding = FragmentCreateStoryBinding.inflate(layoutInflater, container, false)
 
         binding.uploadStoryBtn.setOnClickListener {
-            homeViewModel.addStory(Story(0, userStory))
-            Toast.makeText(requireContext(), "Posted", Toast.LENGTH_SHORT).show()
-            (requireActivity() as MainActivity).binding.bottomNavigationView.selectedItemId = R.id.home
+            authViewModel.getUserId(getUserEmail()).observe(viewLifecycleOwner) { userId ->
+                Log.d("TAG", "Current userId" + userId)
+                homeViewModel.addStory(Story(0, userId, userStory))
+                Toast.makeText(requireContext(), "Posted", Toast.LENGTH_SHORT).show()
+                (requireActivity() as MainActivity).binding.bottomNavigationView.selectedItemId = R.id.home
+            }
         }
 
         binding.guideTextStory.setOnClickListener {
@@ -65,5 +72,12 @@ class CreateStoryFragment : Fragment() {
                 }
             }
         }
+
+    private fun getUserEmail(): String {
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
+        val currentUserEmail = sharedPreferences.getString("username", null)
+        return currentUserEmail.toString()
+    }
 
 }

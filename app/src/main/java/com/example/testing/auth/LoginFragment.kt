@@ -9,11 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.testing.MainActivity
 import com.example.testing.R
+import com.example.testing.auth.room.User
 import com.example.testing.auth.viewmodel.AuthViewModel
 import com.example.testing.databinding.FragmentLoginBinding
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
@@ -32,10 +34,7 @@ class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
     private val authViewModel: AuthViewModel by activityViewModels()
     val REQ_ONE_TAP = 2
-    private var oneTapClient: SignInClient? = null
     private lateinit var firebaseAuth: FirebaseAuth
-    val options: Bundle? = null
-    private lateinit var signInRequest: BeginSignInRequest
     private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +57,7 @@ class LoginFragment : Fragment() {
         binding = FragmentLoginBinding.inflate(layoutInflater, container, false)
 
 
+        activity?.actionBar?.hide()
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -112,12 +112,12 @@ class LoginFragment : Fragment() {
         if (requestCode == REQ_ONE_TAP) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
-                // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)!!
-                Log.d("TAG", "firebaseAuthWithGoogle:" + account.id)
                 firebaseAuthWithGoogle(account.idToken!!)
+                val userGoogleImage = account.photoUrl?.toString()
+                authViewModel.addUser(User(account.id!!,
+                    userGoogleImage!!, account.displayName, account.email))
             } catch (e: ApiException) {
-                // Google Sign In failed, update UI appropriately
                 Log.w("TAG", "Google sign in failed", e)
             }
         }
@@ -128,13 +128,10 @@ class LoginFragment : Fragment() {
         firebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d("TAG", "signInWithCredential:success")
                     Toast.makeText(requireContext(), "Successfully Logged in", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(requireContext(), MainActivity::class.java))
                 } else {
                     Toast.makeText(requireContext(), "Login failed", Toast.LENGTH_SHORT).show()
-                    Log.w("TAG", "signInWithCredential:failure", task.exception)
                 }
             }
     }
@@ -153,7 +150,7 @@ class LoginFragment : Fragment() {
         editor.apply()
     }
 
-    fun userIsLoggedIn(): Boolean {
+    private fun userIsLoggedIn(): Boolean {
         val sharedPreferences =
             requireActivity().getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
         return sharedPreferences.contains("username") && sharedPreferences.contains("password")

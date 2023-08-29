@@ -7,8 +7,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.testing.R
 import com.example.testing.databinding.SampleItemBinding
-import com.example.testing.home.model.HomeModel
-import com.example.testing.search.adapter.SearchAdapter
 import com.example.testing.search.model.SearchModel
 import com.example.testing.utils.DoubleClickListener
 

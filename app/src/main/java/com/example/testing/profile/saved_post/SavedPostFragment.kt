@@ -39,15 +39,15 @@ class SavedPostFragment : Fragment() {
 //        searchToSavedPostAdapter.submitList(searchPostItemList)
 //        binding.savedPostRecyclerView.adapter = searchToSavedPostAdapter
 
-        savedPostAdapter.onUnSaveClicked = { postItem ->
-            Toast.makeText(requireContext(), "Unsaved", Toast.LENGTH_SHORT).show()
-            val deletePos = homePostItemList.indexOfFirst {
-                it.id == postItem.postId
-            }
-            homePostItemList.removeAt(deletePos)
-            savedPostAdapter.notifyItemRemoved(deletePos)
-
-        }
+//        savedPostAdapter.onUnSaveClicked = { postItem ->
+//            Toast.makeText(requireContext(), "Unsaved", Toast.LENGTH_SHORT).show()
+//            val deletePos = homePostItemList.indexOfFirst {
+//                it.id == postItem.postId
+//            }
+//            homePostItemList.removeAt(deletePos)
+//            savedPostAdapter.notifyItemRemoved(deletePos)
+//
+//        }
         return binding.root
     }
 }

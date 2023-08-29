@@ -5,20 +5,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.testing.api.PostApiService
+import com.example.testing.auth.room.AuthDatabase
+import com.example.testing.home.api.PostApiService
 import com.example.testing.home.repository.HomeRepository
 import com.example.testing.home.room.post.story.Story
-import com.example.testing.home.room.post.story.StoryDatabase
-import com.example.testing.model.Urls
-import com.example.testing.model.Wallpapers
+import com.example.testing.home.model.Wallpapers
 import com.example.testing.utils.Resource
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
 
     val postApiService: PostApiService = PostApiService
-    val storyDao = StoryDatabase.getDatabase().storyDao()
+    val storyDao = AuthDatabase.getDatabase().storyDao()
     val homeRepository = HomeRepository(postApiService, storyDao)
 
     private val mutablePostList: MutableLiveData<Resource<List<Wallpapers>>> = MutableLiveData()

@@ -1,9 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Testing" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.Testing" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+         <item name="colorPrimaryDark">@color/status_bar</item>
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+        <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="bottomNavigationStyle">@style/BottomNavBar</item>
     </style>
 
-    <style name="Theme.Testing" parent="Base.Theme.Testing" />
+    <style name="MyActionBar" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="android:background">@color/action_bar</item>
+        <item name="background">@color/action_bar</item>
+    </style>
+
+    <style name="BottomNavBar" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <item name="android:background">@color/bottom_nav</item>
+        <item name="background">@color/bottom_nav</item>
+    </style>
 </resources>

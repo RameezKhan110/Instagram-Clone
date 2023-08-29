@@ -24,6 +24,11 @@ class SearchFragment : Fragment() {
     private val postDetailSharedViewModel: PostDetailSharedViewModel by activityViewModels()
     private val searchAdapter = SearchAdapter()
 
+    override fun onResume() {
+        super.onResume()
+        activity?.actionBar?.title = "Search"
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

@@ -8,5 +8,6 @@ import com.example.testing.utils.ISSTORY
 data class Story(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
+    val usersId: Int,
     val story: String
 )

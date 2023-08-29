@@ -33,6 +33,7 @@ class RegisterFragment : Fragment() {
     ): View? {
         binding = FragmentRegisterBinding.inflate(layoutInflater)
 
+        activity?.actionBar?.hide()
 
         binding.uploadPhotoBtn.setOnClickListener {
             startUserImageResult_register.launch(

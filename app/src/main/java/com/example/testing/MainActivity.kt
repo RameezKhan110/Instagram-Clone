@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.bumptech.glide.Glide
 import com.example.testing.auth.AuthActivity
 import com.example.testing.databinding.ActivityMainBinding
 import com.example.testing.databinding.NavigationHeaderBinding
@@ -36,19 +37,17 @@ class MainActivity : AppCompatActivity() {
         headerBinding = NavigationHeaderBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
-
         firebaseAuth = FirebaseAuth.getInstance()
+        val account = GoogleSignIn.getLastSignedInAccount(this)
 
         actionBarDrawerToggle = ActionBarDrawerToggle(this, binding.drawerLayout, R.string.nav_open, R.string.nav_close)
 
         binding.drawerLayout.addDrawerListener(actionBarDrawerToggle)
-        val headerView = layoutInflater.inflate(R.layout.navigation_header, binding.navigationDrawer, false)
         actionBarDrawerToggle.syncState()
-        binding.navigationDrawer.addHeaderView(headerView)
+        binding.navigationDrawer.addHeaderView(headerBinding.root)
 
-        headerBinding.userImageNavigationDrawer.setImageResource(R.drawable.image)
-        headerBinding.userNameNavigationDrawer.text = "Rameez"
+        Glide.with(this).load(account?.photoUrl).into(headerBinding.userImageNavigationDrawer)
+        headerBinding.userNameNavigationDrawer.text = account?.displayName
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 

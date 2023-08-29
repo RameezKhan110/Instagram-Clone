@@ -1,9 +1,7 @@
 package com.example.testing.home.adapter
 
-import android.util.Log
 import android.util.SparseIntArray
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -15,9 +13,7 @@ import com.example.testing.home.model.PostModel
 import com.example.testing.home.room.post.Home
 import com.example.testing.home.room.post.HomeCommonModel
 import com.example.testing.home.room.post.story.Story
-import com.example.testing.model.Urls
-import com.example.testing.model.Wallpapers
-import com.example.testing.utils.Resource
+import com.example.testing.home.model.Wallpapers
 
 class HomeAdapter :
     ListAdapter<HomeCommonModel, RecyclerView.ViewHolder>(HomeDiffUtil()) {
@@ -53,14 +49,14 @@ class HomeAdapter :
     }
     inner class HomeAdapterPostViewHolder(private val postBinding: SampleItemChildBinding) :
         RecyclerView.ViewHolder(postBinding.root) {
-        fun bind(postItem: Resource<List<Wallpapers>>) {
+        fun bind(postItem: List<PostModel>) {
 
             val postAdapter = PostAdapter()
             postBinding.postRV.layoutManager =
                 LinearLayoutManager(postBinding.root.context, LinearLayoutManager.VERTICAL, false)
             postBinding.postRV.adapter = postAdapter
 
-            postAdapter.submitList(postItem.data)
+            postAdapter.submitList(postItem)
             postAdapter.onSaveClicked = {
                 onSavedClickedHomeAdapter?.invoke(it)
             }

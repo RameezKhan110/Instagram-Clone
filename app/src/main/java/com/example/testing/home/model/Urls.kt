@@ -1,4 +1,4 @@
-package com.example.testing.model
+package com.example.testing.home.model
 
 data class Urls(
     val raw: String,

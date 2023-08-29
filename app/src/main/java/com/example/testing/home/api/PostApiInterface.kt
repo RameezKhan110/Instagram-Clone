@@ -1,7 +1,6 @@
-package com.example.testing.api
+package com.example.testing.home.api
 
-import com.example.testing.model.Urls
-import com.example.testing.model.Wallpapers
+import com.example.testing.home.model.Wallpapers
 import com.example.testing.utils.Const
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

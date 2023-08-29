@@ -3,11 +3,7 @@ package com.example.testing.search.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.example.testing.R
-import com.example.testing.databinding.SampleItemBinding
 import com.example.testing.databinding.SearchSampleItemBinding
-import com.example.testing.home.model.HomeModel
 import com.example.testing.search.model.SearchModel
 
 class SearchAdapter: RecyclerView.Adapter<SearchAdapter.SearchAdapterViewHolder>() {

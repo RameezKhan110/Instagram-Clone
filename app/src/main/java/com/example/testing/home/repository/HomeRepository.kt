@@ -1,16 +1,12 @@
 package com.example.testing.home.repository
 
 import androidx.lifecycle.LiveData
-import com.example.testing.api.PostApiService
-import com.example.testing.home.model.HomeModel
-import com.example.testing.home.model.PostModel
-import com.example.testing.home.model.StoryModel
-import com.example.testing.home.room.post.Home
-import com.example.testing.home.room.post.HomeDao
+import com.example.testing.auth.room.User
+import com.example.testing.auth.room.UserDao
+import com.example.testing.home.api.PostApiService
 import com.example.testing.home.room.post.story.Story
 import com.example.testing.home.room.post.story.StoryDao
-import com.example.testing.model.Urls
-import com.example.testing.model.Wallpapers
+import com.example.testing.home.model.Wallpapers
 
 class HomeRepository(private val postApiService: PostApiService, private val storyDao: StoryDao) {
 
@@ -18,6 +14,7 @@ class HomeRepository(private val postApiService: PostApiService, private val sto
     suspend fun getApiPosts(): List<Wallpapers> {
         return postApiService.postApiInterface.getPosts()
     }
+
 //    suspend fun addPost(post: Home) {
 //        homeDao.addPost(post)
 //    }
