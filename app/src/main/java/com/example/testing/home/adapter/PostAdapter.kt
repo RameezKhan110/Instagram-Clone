@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -20,7 +21,7 @@ import com.example.testing.home.model.Wallpapers
 class PostAdapter : ListAdapter<PostModel, RecyclerView.ViewHolder>(PostDiffUtil()) {
 
     var onSaveClicked: ((Home) -> Unit)? = null
-    var onPostClicked: ((Wallpapers) -> Unit)? = null
+    var onPostClicked: ((PostModel) -> Unit)? = null
 
     inner class PostViewHolder(postBinding: SampleItemBinding) :
         RecyclerView.ViewHolder(postBinding.root)
@@ -34,8 +35,9 @@ class PostAdapter : ListAdapter<PostModel, RecyclerView.ViewHolder>(PostDiffUtil
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val postItems = getItem(position)
 
+//        Log.d("TAG", "calling from post adapter: " + postItems.userImage)
         SampleItemBinding.bind(holder.itemView).apply {
-                Log.d("TAG", "User Post: " +postItems.userPost)
+//                Log.d("TAG", "User Post: " +postItems.userPost)
                 Glide.with(holder.itemView.context)
                     .load(postItems.userPost)
                     .error(R.drawable.error_image)
@@ -59,7 +61,7 @@ class PostAdapter : ListAdapter<PostModel, RecyclerView.ViewHolder>(PostDiffUtil
                         ): Boolean {
                             progressBar2.setVisibility(View.GONE)
                             userPost.setOnClickListener {
-//                                onPostClicked?.invoke(postItems)
+                                onPostClicked?.invoke(postItems)
                             }
                             return false
                         }
@@ -122,7 +124,7 @@ class PostAdapter : ListAdapter<PostModel, RecyclerView.ViewHolder>(PostDiffUtil
 
 class PostDiffUtil : androidx.recyclerview.widget.DiffUtil.ItemCallback<PostModel>() {
     override fun areItemsTheSame(oldItem: PostModel, newItem: PostModel): Boolean {
-        return oldItem == newItem
+        return oldItem.userImage == newItem.userImage
     }
 
     override fun areContentsTheSame(oldItem: PostModel, newItem: PostModel): Boolean {

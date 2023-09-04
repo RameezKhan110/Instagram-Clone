@@ -6,76 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".home.CreatePostFragment">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/userPhoto"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="32dp"
-        android:src="@drawable/baseline_person_24"
-        app:civ_border_width="1dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputUsername"
-        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:hint="Enter Username"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userPhoto"
-        app:layout_constraintVertical_bias="0.07999998">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/userName"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </com.google.android.material.textfield.TextInputEditText>
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLocation"
-        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:hint="Enter Location"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputUsername"
-        app:layout_constraintVertical_bias="0.07999998">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/userLocation"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </com.google.android.material.textfield.TextInputEditText>
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <ImageView
-        android:id="@+id/userUploadedPost"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginVertical="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/uploadPostBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone"
-
-        app:layout_constraintHorizontal_bias="0.526"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLocation"
-        tools:srcCompat="@tools:sample/avatars" />
 
     <Button
         android:id="@+id/uploadPostBtn"
@@ -86,22 +17,42 @@
         android:text="Upload Post"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/userPostImageView"
+        android:layout_width="411dp"
+        android:layout_height="499dp"
+        android:visibility="gone"
+        android:layout_marginVertical="20dp"
+        app:layout_constraintBottom_toTopOf="@id/uploadPostBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/guideTextPost"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:text="Click here to choose post"
         android:gravity="center"
-        android:layout_marginVertical="20dp"
-        android:text="Click Here to Upload Picture"
+        android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/uploadPostBtn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLocation"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/createPostProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/uploadPostBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

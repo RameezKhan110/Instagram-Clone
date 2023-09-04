@@ -5,7 +5,9 @@ import android.app.Activity
 import android.content.ContentResolver
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,10 +21,12 @@ import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.example.testing.MainActivity
 import com.example.testing.R
 import com.example.testing.databinding.FragmentCreatePostBinding
-import com.example.testing.home.room.post.Home
+import com.example.testing.home.firestore.repository.viewmodel.FireStoreHomeViewModel
 import com.example.testing.home.viewmodel.HomeViewModel
+import com.example.testing.utils.NetworkResponse
 import com.github.drjacky.imagepicker.ImagePicker
 import com.google.android.material.textfield.TextInputLayout
 
@@ -31,9 +35,9 @@ class CreatePostFragment : Fragment() {
 
     private lateinit var binding: FragmentCreatePostBinding
     private val homeViewModel: HomeViewModel by activityViewModels()
-    private var userImage: String = ""
-    private var userPost: String = ""
+    private var userPost: Uri? = null
     private lateinit var contentResolver: ContentResolver
+    private val fireStoreHomeViewModel: FireStoreHomeViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -42,25 +46,49 @@ class CreatePostFragment : Fragment() {
     ): View? {
         binding = FragmentCreatePostBinding.inflate(layoutInflater, container, false)
 
-        contentResolver = requireContext().contentResolver
-
-        binding.userPhoto.setOnClickListener {
-//                selectImageFromGallery_UserImage.launch("image/*")
-                startUserImageResult.launch(
-                    ImagePicker.with(requireActivity())
-                        .cropSquare()         //Final image size will be less than 1 MB(Optional)
-                        .galleryOnly()
-                        .createIntent()
-                )
-        }
+//        binding.userPhoto.setOnClickListener {
+////                selectImageFromGallery_UserImage.launch("image/*")
+//                startUserImageResult.launch(
+//                    ImagePicker.with(requireActivity())
+//                        .cropSquare()         //Final image size will be less than 1 MB(Optional)
+//                        .galleryOnly()
+//                        .createIntent()
+//                )
+//        }
 
         binding.guideTextPost.setOnClickListener {
             startUserPostResult.launch(
                 ImagePicker.with(requireActivity())
-                    .cropSquare()         //Final image size will be less than 1 MB(Optional)
+                    .cropSquare()
                     .galleryOnly()
                     .createIntent()
             )
+        }
+
+        binding.uploadPostBtn.setOnClickListener {
+
+            userPost?.let { it1 -> fireStoreHomeViewModel.createPost(it1) }
+            fireStoreHomeViewModel.createLivePost.observe(viewLifecycleOwner) {
+                when(it) {
+                    is NetworkResponse.Error -> {
+                        binding.createPostProgressBar.visibility = View.GONE
+                        binding.userPostImageView.visibility = View.VISIBLE
+                        Toast.makeText(requireContext(), "Error in creating post", Toast.LENGTH_SHORT).show()
+                    }
+                    is NetworkResponse.Loading -> {
+                        Toast.makeText(requireContext(), "Please wait", Toast.LENGTH_SHORT).show()
+                        binding.createPostProgressBar.visibility = View.VISIBLE
+                        binding.userPostImageView.visibility = View.GONE
+                    }
+                    is NetworkResponse.Success -> {
+                        binding.createPostProgressBar.visibility = View.GONE
+                        binding.userPostImageView.visibility = View.VISIBLE
+                        Toast.makeText(requireContext(), "Post created", Toast.LENGTH_SHORT).show()
+                        (requireActivity() as MainActivity).binding.bottomNavigationView.selectedItemId = R.id.home
+                    }
+                }
+            }
+
         }
 
 //        binding.uploadPostBtn.setOnClickListener {
@@ -83,21 +111,21 @@ class CreatePostFragment : Fragment() {
         return binding.root
     }
 
-    private val startUserImageResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            val resultCode = result.resultCode
-            val data = result.data
-
-            if (resultCode == Activity.RESULT_OK) {
-                //Image Uri will not be null for RESULT_OK
-
-                data?.data?.let {
-//                    contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    userImage = it.toFile().absolutePath.toString()
-                    binding.userPhoto.setImageURI(it)
-                }
-            }
-        }
+//    private val startUserImageResult =
+//        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+//            val resultCode = result.resultCode
+//            val data = result.data
+//
+//            if (resultCode == Activity.RESULT_OK) {
+//                //Image Uri will not be null for RESULT_OK
+//
+//                data?.data?.let {
+////                    contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//                    userImage = it.toFile().absolutePath.toString()
+//                    binding.userPhoto.setImageURI(it)
+//                }
+//            }
+//        }
 
     private val startUserPostResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -105,14 +133,13 @@ class CreatePostFragment : Fragment() {
             val data = result.data
 
             if (resultCode == Activity.RESULT_OK) {
-                //Image Uri will not be null for RESULT_OK
 
                 data?.data?.let {
-//                    contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    userPost = it.toFile().absolutePath.toString()
-                    binding.userUploadedPost.visibility = View.VISIBLE
+                    Log.d("TAG", "uri of post")
+                    userPost = it
+                    binding.userPostImageView.visibility = View.VISIBLE
                     binding.guideTextPost.visibility = View.GONE
-                    binding.userUploadedPost.setImageURI(it)
+                    binding.userPostImageView.setImageURI(it)
                 }
             }
         }
@@ -155,13 +182,6 @@ class CreatePostFragment : Fragment() {
 //        boxStrokeErrorColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.red))
     }
 
-    private fun checkPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun requestExternalStoragePermission() {
-        ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 100)
-    }
 
 //    fun TextInputLayout.resetToDefaultColor() {
 //        val defaultColor = ContextCompat.getColor(context, R.color.blue)

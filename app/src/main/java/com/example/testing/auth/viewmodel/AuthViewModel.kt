@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.testing.auth.repository.AuthRepository
 import com.example.testing.auth.room.Auth
 import com.example.testing.auth.room.AuthDatabase
-import com.example.testing.auth.room.CombinedUserData
 import com.example.testing.auth.room.User
 import com.example.testing.auth.room.UserDatabase
 import com.example.testing.home.room.post.story.Story
@@ -42,8 +41,8 @@ class AuthViewModel: ViewModel() {
         return authRepository.getUserId(userEmail)
     }
 
-    fun getDataAsPerId(userEmail: String): LiveData<List<Auth>> {
-        return authRepository.getDataAsPerId(userEmail)
+    fun getDataAsPerEmail(userEmail: String): LiveData<List<Auth>> {
+        return authRepository.getDataAsPerEmail(userEmail)
     }
 
     fun getStoryAsPerId(userId: Int): LiveData<List<Story>> {

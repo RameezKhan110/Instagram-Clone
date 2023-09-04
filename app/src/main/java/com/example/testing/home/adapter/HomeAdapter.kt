@@ -1,5 +1,6 @@
 package com.example.testing.home.adapter
 
+import android.util.Log
 import android.util.SparseIntArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.testing.R
 import com.example.testing.databinding.HomeStoriesChildBinding
 import com.example.testing.databinding.SampleItemChildBinding
+import com.example.testing.home.firestore.repository.model.FireStoreStory
 import com.example.testing.home.model.PostModel
+import com.example.testing.home.model.StoryModel
 import com.example.testing.home.room.post.Home
 import com.example.testing.home.room.post.HomeCommonModel
 import com.example.testing.home.room.post.story.Story
@@ -20,7 +23,7 @@ class HomeAdapter :
 
     var onSavedClickedHomeAdapter: ((Home) -> Unit)? = null
     private val positionList = SparseIntArray()
-    var onPostClickedHomeAdapter: ((Wallpapers) -> Unit)? = null
+    var onPostClickedHomeAdapter: ((PostModel) -> Unit)? = null
 
 
     override fun getItemViewType(position: Int): Int {
@@ -34,7 +37,7 @@ class HomeAdapter :
         RecyclerView.ViewHolder(storiesBinding.root) {
 
         lateinit var layoutManager: LinearLayoutManager
-        fun bind(storiesItem: List<Story>) {
+        fun bind(storiesItem: List<StoryModel>) {
             layoutManager = LinearLayoutManager(
                 storiesBinding.root.context,
                 LinearLayoutManager.HORIZONTAL,

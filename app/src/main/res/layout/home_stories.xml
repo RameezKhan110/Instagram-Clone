@@ -6,9 +6,9 @@
     android:layout_height="wrap_content">
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/userStoryImageView"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:id="@+id/userStoryImageView"
         android:layout_margin="10dp"
         android:src="@drawable/flower"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -16,5 +16,15 @@
         app:layout_constraintTop_toTopOf="parent">
 
     </de.hdodenhof.circleimageview.CircleImageView>
+
+    <ProgressBar
+        android:id="@+id/storyLoadingProgressbar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

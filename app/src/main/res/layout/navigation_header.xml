@@ -8,8 +8,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/userImage_navigationDrawer"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginTop="32dp"
         android:src="@drawable/image"
         app:layout_constraintEnd_toEndOf="parent"

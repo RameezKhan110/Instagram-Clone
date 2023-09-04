@@ -18,11 +18,11 @@ interface AuthDao {
     @Query("SELECT * FROM auth_table WHERE userEmail = :userEmail")
     fun isEmailRegistered(userEmail: String): LiveData<Auth>
 
+    @Query("SELECT * FROM auth_table WHERE userEmail = :userEmail")
+    fun getDataAsPerEmail(userEmail: String): LiveData<List<Auth>>
+
     @Query("SELECT userId from auth_table WHERE userEmail = :userEmail")
     fun getUserId(userEmail: String): LiveData<Int>
-
-    @Query("SELECT * FROM auth_table WHERE userEmail = :userEmail")
-    fun getDataAsPerId(userEmail: String): LiveData<List<Auth>>
 
     @Query("SELECT * FROM home_stories WHERE usersId = :userId")
     fun getStoryAsPerId(userId: Int): LiveData<List<Story>>

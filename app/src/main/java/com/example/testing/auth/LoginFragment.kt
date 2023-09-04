@@ -1,5 +1,6 @@
 package com.example.testing.auth
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
@@ -17,7 +18,10 @@ import com.example.testing.MainActivity
 import com.example.testing.R
 import com.example.testing.auth.room.User
 import com.example.testing.auth.viewmodel.AuthViewModel
+import com.example.testing.auth.viewmodel.FirebaseAuthViewModel
 import com.example.testing.databinding.FragmentLoginBinding
+import com.example.testing.utils.FirebaseResource
+import com.example.testing.utils.NetworkResponse
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -34,8 +38,11 @@ class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
     private val authViewModel: AuthViewModel by activityViewModels()
     val REQ_ONE_TAP = 2
+
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    private val firebaseAuthViewModel: FirebaseAuthViewModel by activityViewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +57,7 @@ class LoginFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -58,101 +66,131 @@ class LoginFragment : Fragment() {
 
 
         activity?.actionBar?.hide()
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
-
-        googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
-
-        if (userIsLoggedIn()) {
-            startActivity(Intent(requireContext(), MainActivity::class.java))
-            requireActivity().finish()
-        }
+//        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//            .requestIdToken(getString(R.string.default_web_client_id))
+//            .requestEmail()
+//            .build()
+//
+//        googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+//
+//        if (userIsLoggedIn()) {
+//            startActivity(Intent(requireContext(), MainActivity::class.java))
+//            requireActivity().finish()
+//        }
 
         binding.loginBtn.setOnClickListener {
             val userEmailLogin = binding.userEmailLogin.text.toString().trim()
             val userPasswordLogin = binding.userPasswordLogin.text.toString().trim()
 
             if (userEmailLogin.isNotEmpty() && userPasswordLogin.isNotEmpty()) {
-                authViewModel.loginUser(userEmailLogin, userPasswordLogin)
-                authViewModel.loginLiveUser.observe(viewLifecycleOwner) {
-                    if (it != null) {
-                        Toast.makeText(requireContext(), "Logging in", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(requireContext(), MainActivity::class.java))
-                        requireActivity().finish()
-                        saveUserCredentials(userEmailLogin, userPasswordLogin)
 
-                    } else {
-                        binding.errorTv.text = "*email or password is in incorrect"
-                        binding.errorTv.visibility = View.VISIBLE
+                firebaseAuthViewModel.signInUser(userEmailLogin, userPasswordLogin)
+
+                firebaseAuthViewModel.loginLiveData.observe(viewLifecycleOwner) {
+                    when (it) {
+                        is FirebaseResource.Error -> {
+                            Toast.makeText(
+                                requireContext(),
+                                it.exception.message,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            binding.loginProgressBar.visibility = View.GONE
+                        }
+
+                        FirebaseResource.Loading -> {
+                            binding.loginProgressBar.visibility = View.VISIBLE
+
+                        }
+
+                        is FirebaseResource.Success -> {
+                            Toast.makeText(requireContext(), "Logging In", Toast.LENGTH_SHORT)
+                                .show()
+                            binding.loginProgressBar.visibility = View.GONE
+                            startActivity(Intent(requireContext(), MainActivity::class.java))
+                            requireActivity().finish()
+                        }
                     }
                 }
+
+//                authViewModel.loginUser(userEmailLogin, userPasswordLogin)
+//                authViewModel.loginLiveUser.observe(viewLifecycleOwner) {
+//                    if (it != null) {
+//                        Toast.makeText(requireContext(), "Logging in", Toast.LENGTH_SHORT).show()
+//                        startActivity(Intent(requireContext(), MainActivity::class.java))
+//                        requireActivity().finish()
+//                        saveUserCredentials(userEmailLogin, userPasswordLogin)
+//
+//                    } else {
+//                        binding.errorTv.text = "*email or password is in incorrect"
+//                        binding.errorTv.visibility = View.VISIBLE
+//                    }
+//                }
             } else {
                 binding.errorTv.text = "all fields are required"
                 binding.errorTv.visibility = View.VISIBLE
             }
         }
 
+
         binding.goToRegister.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
 
         binding.signInWithGoogleBtn.setOnClickListener {
-            signIn()
+//            signIn()
         }
 
         return binding.root
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        if (requestCode == REQ_ONE_TAP) {
+//            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+//            try {
+//                val account = task.getResult(ApiException::class.java)!!
+//                firebaseAuthWithGoogle(account.idToken!!)
+//                val userGoogleImage = account.photoUrl?.toString()
+//                authViewModel.addUser(User(account.id!!,
+//                    userGoogleImage!!, account.displayName, account.email))
+//            } catch (e: ApiException) {
+//                Log.w("TAG", "Google sign in failed", e)
+//            }
+//        }
+//    }
+//
+//    private fun firebaseAuthWithGoogle(idToken: String) {
+//        val credential = GoogleAuthProvider.getCredential(idToken, null)
+//        firebaseAuth.signInWithCredential(credential)
+//            .addOnCompleteListener { task ->
+//                if (task.isSuccessful) {
+//                    Toast.makeText(requireContext(), "Successfully Logged in", Toast.LENGTH_SHORT).show()
+//                    startActivity(Intent(requireContext(), MainActivity::class.java))
+//                } else {
+//                    Toast.makeText(requireContext(), "Login failed", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//    }
+//
+//    private fun signIn() {
+//        val signInIntent = googleSignInClient.signInIntent
+//        startActivityForResult(signInIntent, REQ_ONE_TAP)
+//    }
 
-        if (requestCode == REQ_ONE_TAP) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                val account = task.getResult(ApiException::class.java)!!
-                firebaseAuthWithGoogle(account.idToken!!)
-                val userGoogleImage = account.photoUrl?.toString()
-                authViewModel.addUser(User(account.id!!,
-                    userGoogleImage!!, account.displayName, account.email))
-            } catch (e: ApiException) {
-                Log.w("TAG", "Google sign in failed", e)
-            }
-        }
-    }
+//    private fun saveUserCredentials(userEmail: String, userPassword: String) {
+//        val sharedPreferences =
+//            requireActivity().getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
+//        val editor = sharedPreferences.edit()
+//        editor.putString("username", userEmail)
+//        editor.putString("password", userPassword)
+//        editor.apply()
+//    }
 
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        firebaseAuth.signInWithCredential(credential)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(requireContext(), "Successfully Logged in", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(requireContext(), MainActivity::class.java))
-                } else {
-                    Toast.makeText(requireContext(), "Login failed", Toast.LENGTH_SHORT).show()
-                }
-            }
-    }
-
-    private fun signIn() {
-        val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, REQ_ONE_TAP)
-    }
-
-    private fun saveUserCredentials(userEmail: String, userPassword: String) {
-        val sharedPreferences =
-            requireActivity().getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("username", userEmail)
-        editor.putString("password", userPassword)
-        editor.apply()
-    }
-
-    private fun userIsLoggedIn(): Boolean {
-        val sharedPreferences =
-            requireActivity().getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
-        return sharedPreferences.contains("username") && sharedPreferences.contains("password")
-    }
+//    private fun userIsLoggedIn(): Boolean {
+//        val sharedPreferences =
+//            requireActivity().getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
+//        return sharedPreferences.contains("username") && sharedPreferences.contains("password")
+//    }
 }

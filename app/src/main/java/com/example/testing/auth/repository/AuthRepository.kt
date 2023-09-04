@@ -3,7 +3,6 @@ package com.example.testing.auth.repository
 import androidx.lifecycle.LiveData
 import com.example.testing.auth.room.Auth
 import com.example.testing.auth.room.AuthDao
-import com.example.testing.auth.room.CombinedUserData
 import com.example.testing.auth.room.User
 import com.example.testing.auth.room.UserDao
 import com.example.testing.home.room.post.story.Story
@@ -30,8 +29,8 @@ class AuthRepository(private val authDao: AuthDao, private val userDao: UserDao)
         return authDao.getUserId(userEmail)
     }
 
-    fun getDataAsPerId(userEmail: String): LiveData<List<Auth>> {
-        return authDao.getDataAsPerId(userEmail)
+    fun getDataAsPerEmail(userEmail: String): LiveData<List<Auth>> {
+        return authDao.getDataAsPerEmail(userEmail)
     }
 
     fun getStoryAsPerId(userId: Int): LiveData<List<Story>> {
