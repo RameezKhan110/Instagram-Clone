@@ -125,6 +125,7 @@ class MainActivity : AppCompatActivity() {
                     clearUserCredentials()
 //                    firebaseAuth.signOut()
                     clearCachedGoogleSignInCredentials()
+                    clearUserDetails()
                     startActivity(Intent(this, AuthActivity::class.java))
                     finish()
                     Toast.makeText(this, "Logging out", Toast.LENGTH_SHORT).show()
@@ -209,6 +210,15 @@ class MainActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("user_info", Context.MODE_PRIVATE)
         userImage = prefs?.getString("user_image", null).toString()
         userName = prefs?.getString("user_name", null).toString()
+    }
+
+    private fun clearUserDetails() {
+
+        val prefs = getSharedPreferences("user_info", Context.MODE_PRIVATE)
+        val editor = prefs?.edit()
+
+        editor?.clear()
+        editor?.apply()
     }
 
 //    interface onBackPressedCallback {

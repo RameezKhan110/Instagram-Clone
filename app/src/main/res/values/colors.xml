@@ -6,4 +6,6 @@
     <color name="action_bar">#E5989B</color>
     <color name="status_bar">#E5989B</color>
     <color name="bottom_nav">#FC6C85</color>
+    <color name="colorGrey">#dddddd</color>
+
 </resources>

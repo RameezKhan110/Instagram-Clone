@@ -138,8 +138,7 @@ class RegisterFragment : Fragment() {
                             }
 
                             is NetworkResponse.Success -> {
-                                Toast.makeText(requireContext(), "Registered", Toast.LENGTH_SHORT)
-                                    .show()
+
                                 binding.registerProgressBar.visibility = View.GONE
                                 firebaseAuthViewModel.getUserDetails()
                                 firebaseAuthViewModel.getLiveUserDetails.observe(viewLifecycleOwner) {
@@ -159,9 +158,11 @@ class RegisterFragment : Fragment() {
                                         is NetworkResponse.Success -> {
                                             it.data?.let { userDetails ->
                                                 Log.d("TAG", "calling from login" + userDetails)
-                                                saveUserInfo(userDetails)
+                                                saveUserInfoRegister(userDetails)
 
                                             }
+                                            Toast.makeText(requireContext(), "Registered", Toast.LENGTH_SHORT)
+                                                .show()
                                             startActivity(
                                                 Intent(
                                                     requireContext(),
@@ -203,7 +204,7 @@ class RegisterFragment : Fragment() {
 
         }
 
-    private fun saveUserInfo(
+    fun saveUserInfoRegister(
         user: com.example.testing.auth.model.User
     ) {
         val prefs = context?.getSharedPreferences("user_info", Context.MODE_PRIVATE)
@@ -214,7 +215,6 @@ class RegisterFragment : Fragment() {
         editor?.putString("user_email", user.userEmail)
         editor?.putString("user_password", user.userPassword)
         editor?.putString("user_id", user.userId)
-
         editor?.apply()
     }
 }

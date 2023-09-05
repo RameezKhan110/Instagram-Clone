@@ -96,16 +96,19 @@ class HomeFragment : Fragment() {
                 commonModelList.clear()
                 when(userPost) {
                     is NetworkResponse.Error -> {
-                        binding.progressBar.visibility = View.GONE
+                        binding.shimmerEffectHome.stopShimmerAnimation()
+                        binding.shimmerEffectHome.visibility = View.GONE
                         binding.parentRecyclerViewHome.visibility = View.VISIBLE
                         Toast.makeText(requireContext(), "Error in fetching post", Toast.LENGTH_SHORT).show()
                     }
                     is NetworkResponse.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
+                        binding.shimmerEffectHome.startShimmerAnimation()
+                        binding.shimmerEffectHome.visibility = View.VISIBLE
                         binding.parentRecyclerViewHome.visibility = View.GONE
                     }
                     is NetworkResponse.Success -> {
-                        binding.progressBar.visibility = View.GONE
+                        binding.shimmerEffectHome.stopShimmerAnimation()
+                        binding.shimmerEffectHome.visibility = View.GONE
                         binding.parentRecyclerViewHome.visibility = View.VISIBLE
                         postList.clear()
                         userPost.data?.forEach {

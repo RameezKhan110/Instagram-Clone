@@ -28,6 +28,9 @@ class FireStoreHomeViewModel : ViewModel() {
     private val _getLiveStory: MutableLiveData<List<FireStoreStory>> = MutableLiveData()
     val getLiveStory: LiveData<List<FireStoreStory>> = _getLiveStory
 
+    private val _getLiveRemoteConfigStrings: MutableLiveData<NetworkResponse<String>> = MutableLiveData()
+    val getLiveRemoteConfigStrings: LiveData<NetworkResponse<String>> = _getLiveRemoteConfigStrings
+
     fun createPost(userPostImageView: Uri) = viewModelScope.launch {
         _createLivePost.value = NetworkResponse.Loading()
         val result = fireStoreHomeRepository.createPost(userPostImageView)
@@ -50,5 +53,11 @@ class FireStoreHomeViewModel : ViewModel() {
         val result = fireStoreHomeRepository.getStories()
         Log.d("TAG", "calling from Story firestore view model" + result)
         _getLiveStory.value = result
+    }
+
+    fun getRemoteConfigStrings() = viewModelScope.launch {
+        _getLiveRemoteConfigStrings.value = NetworkResponse.Loading()
+        val result = fireStoreHomeRepository.getRemoteConfigStrings()
+        _getLiveRemoteConfigStrings.value = result
     }
 }

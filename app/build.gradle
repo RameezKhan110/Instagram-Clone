@@ -79,6 +79,11 @@ dependencies {
 
     implementation 'com.github.lau1944:Zoom-Drag-Rotate-ImageView:1.0.0'
 
+    implementation("com.google.firebase:firebase-config-ktx")
+
+    implementation 'com.facebook.shimmer:shimmer:0.1.0@aar'
+
+
 
 
 

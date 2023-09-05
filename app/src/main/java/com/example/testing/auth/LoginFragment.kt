@@ -20,6 +20,7 @@ import com.example.testing.auth.room.User
 import com.example.testing.auth.viewmodel.AuthViewModel
 import com.example.testing.auth.viewmodel.FirebaseAuthViewModel
 import com.example.testing.databinding.FragmentLoginBinding
+import com.example.testing.home.firestore.repository.viewmodel.FireStoreHomeViewModel
 import com.example.testing.utils.FirebaseResource
 import com.example.testing.utils.NetworkResponse
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
@@ -42,6 +43,7 @@ class LoginFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
     private val firebaseAuthViewModel: FirebaseAuthViewModel by activityViewModels()
+    private val fireStoreHomeViewModel: FireStoreHomeViewModel by activityViewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,7 +66,20 @@ class LoginFragment : Fragment() {
     ): View? {
         binding = FragmentLoginBinding.inflate(layoutInflater, container, false)
 
-
+        fireStoreHomeViewModel.getRemoteConfigStrings()
+        fireStoreHomeViewModel.getLiveRemoteConfigStrings.observe(viewLifecycleOwner) {
+            when (it) {
+                is NetworkResponse.Error -> {
+                    Log.d("TAG", "Error in fetching remote configs")
+                }
+                is NetworkResponse.Loading -> {
+                    Log.d("TAG", "Fetching remote configs")
+                }
+                is NetworkResponse.Success -> {
+                    binding.loginBtn.text = it.data
+                }
+            }
+        }
         activity?.actionBar?.hide()
 //        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
 //            .requestIdToken(getString(R.string.default_web_client_id))
@@ -103,11 +118,36 @@ class LoginFragment : Fragment() {
                         }
 
                         is FirebaseResource.Success -> {
-                            Toast.makeText(requireContext(), "Logging In", Toast.LENGTH_SHORT)
-                                .show()
+
                             binding.loginProgressBar.visibility = View.GONE
-                            startActivity(Intent(requireContext(), MainActivity::class.java))
-                            requireActivity().finish()
+                            firebaseAuthViewModel.getUserDetails()
+                            firebaseAuthViewModel.getLiveUserDetails.observe(viewLifecycleOwner) {
+                                when (it) {
+                                    is NetworkResponse.Error -> {
+                                        Toast.makeText(
+                                            requireContext(),
+                                            it.toString(),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+
+                                    is NetworkResponse.Loading -> {
+
+                                    }
+
+                                    is NetworkResponse.Success -> {
+                                        it.data?.let { userDetails ->
+                                            Log.d("TAG", "calling from login" + userDetails)
+                                            saveUserInfoLogin(userDetails)
+
+                                        }
+                                        Toast.makeText(requireContext(), "Logging In", Toast.LENGTH_SHORT)
+                                            .show()
+                                        startActivity(Intent(requireContext(), MainActivity::class.java))
+                                        requireActivity().finish()
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -143,6 +183,19 @@ class LoginFragment : Fragment() {
         return binding.root
     }
 
+    fun saveUserInfoLogin(
+        user: com.example.testing.auth.model.User
+    ) {
+        val prefs = context?.getSharedPreferences("user_info", Context.MODE_PRIVATE)
+        val editor = prefs?.edit()
+
+        editor?.putString("user_image", user.userImage)
+        editor?.putString("user_name", user.userName)
+        editor?.putString("user_email", user.userEmail)
+        editor?.putString("user_password", user.userPassword)
+        editor?.putString("user_id", user.userId)
+        editor?.apply()
+    }
 
 //    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 //        super.onActivityResult(requestCode, resultCode, data)

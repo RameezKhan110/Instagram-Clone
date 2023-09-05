@@ -1,7 +1,9 @@
 package com.example.testing.home.firestore.repository
 
+import android.accounts.NetworkErrorException
 import android.net.Uri
 import android.util.Log
+import com.example.testing.R
 import com.example.testing.home.firestore.repository.model.FireStoreStory
 import com.example.testing.home.firestore.repository.model.Post
 import com.example.testing.utils.NetworkResponse
@@ -10,6 +12,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 
@@ -22,6 +28,7 @@ class FireStoreHomeRepository {
     suspend fun createPost(userPostImageview: Uri): NetworkResponse<Boolean>{
 
         val userId = firebaseAuth.currentUser?.uid
+        val postId = fireStore.collection("Posts").document().id
         val storageRef = FirebaseStorage.getInstance().reference
         val imageName = "${System.currentTimeMillis()}.jpg"
         val imageRef = storageRef.child("post_images/${imageName}.jpg")
@@ -31,7 +38,7 @@ class FireStoreHomeRepository {
         val userPost = Post(userId!!, downloadUrlInString)
 
         return try {
-            fireStore.collection("User").document(userId).collection("Posts").add(userPost).await()
+            fireStore.collection("Posts").document(postId).set(userPost).await()
             NetworkResponse.Success(true)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -63,7 +70,7 @@ class FireStoreHomeRepository {
     suspend fun getPosts(): NetworkResponse<List<Post>> {
         val postList = mutableListOf<Post>()
         val userId = firebaseAuth.currentUser?.uid
-        val postDetailRef = fireStore.collection("User").document(userId!!).collection("Posts").get()
+        val postDetailRef = fireStore.collection("Posts").whereEqualTo("postId", userId).get()
 
         try {
             postDetailRef.await().let {
@@ -100,5 +107,24 @@ class FireStoreHomeRepository {
             Log.d("TAG", "stories exception from firestore")
         }
         return storyList
+    }
+
+    suspend fun getRemoteConfigStrings(): NetworkResponse<String> {
+
+        val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+        val configSettings = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 30
+        }
+        remoteConfig.setConfigSettingsAsync(configSettings)
+        remoteConfig.setDefaultsAsync(R.xml.remote_config_default_values)
+
+        return try {
+            remoteConfig.fetchAndActivate().await()
+            val loginBtnText = remoteConfig.getString("LoginBtn_Text")
+            NetworkResponse.Success(loginBtnText)
+        } catch (e: FirebaseRemoteConfigException) {
+            e.printStackTrace()
+            NetworkResponse.Error(e.message)
+        }
     }
 }
