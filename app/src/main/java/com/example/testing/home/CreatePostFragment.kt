@@ -67,27 +67,29 @@ class CreatePostFragment : Fragment() {
 
         binding.uploadPostBtn.setOnClickListener {
 
-            userPost?.let { it1 -> fireStoreHomeViewModel.createPost(it1) }
-            fireStoreHomeViewModel.createLivePost.observe(viewLifecycleOwner) {
-                when(it) {
-                    is NetworkResponse.Error -> {
-                        binding.createPostProgressBar.visibility = View.GONE
-                        binding.userPostImageView.visibility = View.VISIBLE
-                        Toast.makeText(requireContext(), "Error in creating post", Toast.LENGTH_SHORT).show()
-                    }
-                    is NetworkResponse.Loading -> {
-                        Toast.makeText(requireContext(), "Please wait", Toast.LENGTH_SHORT).show()
-                        binding.createPostProgressBar.visibility = View.VISIBLE
-                        binding.userPostImageView.visibility = View.GONE
-                    }
-                    is NetworkResponse.Success -> {
-                        binding.createPostProgressBar.visibility = View.GONE
-                        binding.userPostImageView.visibility = View.VISIBLE
-                        Toast.makeText(requireContext(), "Post created", Toast.LENGTH_SHORT).show()
-                        (requireActivity() as MainActivity).binding.bottomNavigationView.selectedItemId = R.id.home
-                    }
-                }
-            }
+            userPost?.let { it1 -> fireStoreHomeViewModel.createPost(requireContext(), it1) }
+            Toast.makeText(requireContext(), "Post created", Toast.LENGTH_SHORT).show()
+            (requireActivity() as MainActivity).binding.bottomNavigationView.selectedItemId = R.id.home
+//            fireStoreHomeViewModel.createLivePost.observe(viewLifecycleOwner) {
+//                when(it) {
+//                    is NetworkResponse.Error -> {
+//                        binding.createPostProgressBar.visibility = View.GONE
+//                        binding.userPostImageView.visibility = View.VISIBLE
+//                        Toast.makeText(requireContext(), "Error in creating post", Toast.LENGTH_SHORT).show()
+//                    }
+//                    is NetworkResponse.Loading -> {
+//                        Toast.makeText(requireContext(), "Please wait", Toast.LENGTH_SHORT).show()
+//                        binding.createPostProgressBar.visibility = View.VISIBLE
+//                        binding.userPostImageView.visibility = View.GONE
+//                    }
+//                    is NetworkResponse.Success -> {
+//                        binding.createPostProgressBar.visibility = View.GONE
+//                        binding.userPostImageView.visibility = View.VISIBLE
+//                        Toast.makeText(requireContext(), "Post created", Toast.LENGTH_SHORT).show()
+//                        (requireActivity() as MainActivity).binding.bottomNavigationView.selectedItemId = R.id.home
+//                    }
+//                }
+//            }
 
         }
 

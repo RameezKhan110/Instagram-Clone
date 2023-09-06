@@ -25,7 +25,7 @@ class FireStoreHomeRepository {
 
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    suspend fun createPost(userPostImageview: Uri): NetworkResponse<Boolean>{
+    suspend fun createPost(userPostImageview: Uri): NetworkResponse<Boolean> {
 
         val userId = firebaseAuth.currentUser?.uid
         val postId = fireStore.collection("Posts").document().id
@@ -42,6 +42,7 @@ class FireStoreHomeRepository {
             NetworkResponse.Success(true)
         } catch (e: Exception) {
             e.printStackTrace()
+            Log.d("TAG", "call from repo create post" + e)
             NetworkResponse.Error(e.message)
         }
     }

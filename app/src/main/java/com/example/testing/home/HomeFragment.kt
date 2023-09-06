@@ -49,12 +49,12 @@ class HomeFragment : Fragment() {
     var userPost: String = ""
     var userData: com.example.testing.auth.model.User? = null
     var storiesList = mutableListOf<StoryModel>()
-    private lateinit var customDialog: CustomDialogBox
     @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
         Log.d("TAG", "calling on resume")
         activity?.actionBar?.title = "Home"
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +73,7 @@ class HomeFragment : Fragment() {
         commonModelList.clear()
         Log.d("TAG", "calling from onPause $commonModelList")
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -85,8 +86,18 @@ class HomeFragment : Fragment() {
         binding.parentRecyclerViewHome.layoutManager = LinearLayoutManager(requireContext())
         binding.parentRecyclerViewHome.adapter = homeAdapter
 
-//        customDialog = CustomDialogBox(requireContext())
+
         getUserDetailsHome()
+        fireStoreHomeView.returnWorkRequest().let { workReq ->
+            if (workReq != null) {
+                fireStoreHomeView.observerWorkReq(workReq).observe(viewLifecycleOwner) {
+                    if(it != null) {
+                        Log.d("TAG", "worker from home calling")
+                        fireStoreHomeView.getPosts()
+                    }
+                }
+            }
+        }
         fireStoreHomeView.getPosts()
         fireStoreHomeView.getStory()
 
@@ -96,7 +107,6 @@ class HomeFragment : Fragment() {
                 commonModelList.clear()
                 when(userPost) {
                     is NetworkResponse.Error -> {
-                        binding.shimmerEffectHome.stopShimmerAnimation()
                         binding.shimmerEffectHome.visibility = View.GONE
                         binding.parentRecyclerViewHome.visibility = View.VISIBLE
                         Toast.makeText(requireContext(), "Error in fetching post", Toast.LENGTH_SHORT).show()
@@ -107,7 +117,6 @@ class HomeFragment : Fragment() {
                         binding.parentRecyclerViewHome.visibility = View.GONE
                     }
                     is NetworkResponse.Success -> {
-                        binding.shimmerEffectHome.stopShimmerAnimation()
                         binding.shimmerEffectHome.visibility = View.GONE
                         binding.parentRecyclerViewHome.visibility = View.VISIBLE
                         postList.clear()

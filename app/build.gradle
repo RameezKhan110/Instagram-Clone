@@ -83,6 +83,11 @@ dependencies {
 
     implementation 'com.facebook.shimmer:shimmer:0.1.0@aar'
 
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+
+    implementation 'com.google.firebase:firebase-storage:20.2.1'
+
+
 
 
 
