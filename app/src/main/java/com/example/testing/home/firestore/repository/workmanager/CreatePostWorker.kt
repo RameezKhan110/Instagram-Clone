@@ -19,7 +19,6 @@ class CreatePostWorker(context: Context, params: WorkerParameters) :
     CoroutineWorker(context, params) {
 
     private val fireStoreHomeRepository = FireStoreHomeRepository()
-    private val viewModel = FireStoreHomeViewModel()
     override suspend fun doWork(): Result {
 
         return try {

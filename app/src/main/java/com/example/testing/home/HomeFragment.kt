@@ -1,7 +1,14 @@
 package com.example.testing.home
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,27 +16,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.map
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.testing.MainActivity
 import com.example.testing.R
 import com.example.testing.auth.viewmodel.AuthViewModel
 import com.example.testing.databinding.FragmentHomeBinding
 import com.example.testing.home.adapter.HomeAdapter
-import com.example.testing.home.firestore.repository.FireStoreHomeRepository
 import com.example.testing.home.firestore.repository.viewmodel.FireStoreHomeViewModel
 import com.example.testing.home.model.PostModel
 import com.example.testing.home.model.StoryModel
 import com.example.testing.home.room.post.HomeCommonModel
-import com.example.testing.home.room.post.story.Story
 import com.example.testing.home.viewmodel.HomeViewModel
 import com.example.testing.profile.saved_post.viewmodel.SavedSharedViewModel
 import com.example.testing.utils.NetworkResponse
-import com.example.testing.utils.Resource
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.firebase.firestore.auth.User
 
 class HomeFragment : Fragment() {
 
@@ -49,6 +55,8 @@ class HomeFragment : Fragment() {
     var userPost: String = ""
     var userData: com.example.testing.auth.model.User? = null
     var storiesList = mutableListOf<StoryModel>()
+    private val channelId = "CHANNEL"
+
     @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
@@ -86,14 +94,30 @@ class HomeFragment : Fragment() {
         binding.parentRecyclerViewHome.layoutManager = LinearLayoutManager(requireContext())
         binding.parentRecyclerViewHome.adapter = homeAdapter
 
+        fireStoreHomeView.deleteStory(requireContext())
+        fireStoreHomeView.returnDeletePostWorkRequest().let {
+            Log.d("TAG", "work req stry" + it)
+            if (it != null) {
+                fireStoreHomeView.observeDeletePostWorkRequest(it)?.observe(viewLifecycleOwner) {
+                    if(it != null) {
+                        Toast.makeText(requireContext(), "Post deleted after 15 mins", Toast.LENGTH_SHORT).show()
+                        fireStoreHomeView.getStory()
+                    }
+                }
+            }
+        }
 
         getUserDetailsHome()
-        fireStoreHomeView.returnWorkRequest().let { workReq ->
+        fireStoreHomeView.returnCreatePostWorkRequest().let { workReq ->
+            Log.d("TAG", "work req" + workReq)
             if (workReq != null) {
-                fireStoreHomeView.observerWorkReq(workReq).observe(viewLifecycleOwner) {
+                fireStoreHomeView.observeCreatePostWorkReq(workReq).observe(viewLifecycleOwner) {
                     if(it != null) {
-                        Log.d("TAG", "worker from home calling")
+                        Toast.makeText(requireContext(), "Getting posts", Toast.LENGTH_SHORT).show()
                         fireStoreHomeView.getPosts()
+                        createNotificationChannel()
+                        showNotification()
+
                     }
                 }
             }
@@ -231,6 +255,64 @@ class HomeFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         binding == null
+    }
+
+    private fun createNotificationChannel() {
+        val context: Context = requireContext()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = "My Channel"
+            val descriptionText = "My Notification Channel"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(channelId, name, importance).apply {
+                description = descriptionText
+            }
+
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun showNotification() {
+        val builder = NotificationCompat.Builder(requireContext(), channelId)
+            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setContentTitle("Hey User")
+            .setContentText("Your post has been uploaded")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//            .setStyle(
+//                NotificationCompat.BigTextStyle()
+//                    .bigText(
+//                        "This is a longer message that can be expanded " +
+//                                "to provide more details about the notification. " +
+//                                "You can add more text here to see how the notification expands."
+//                    )
+//            )
+//            .setStyle(NotificationCompat.BigPictureStyle()
+//                .bigPicture(R.drawable.ic_launcher_background))
+//            .setStyle(NotificationCompat.BigTextStyle()
+//                .bigText("Much longer text that cannot fit one line..."))
+
+        val notificationManager = NotificationManagerCompat.from(requireContext())
+
+        val resultIntent = Intent(requireContext(), MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(
+            requireContext(), 0, resultIntent, PendingIntent.FLAG_MUTABLE
+        )
+
+        builder.setContentIntent(pendingIntent).setAutoCancel(true)
+        val notificationId = 1
+
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            return
+        }
+        notificationManager.notify(notificationId, builder.build())
     }
 
     private fun handleBackPress() {

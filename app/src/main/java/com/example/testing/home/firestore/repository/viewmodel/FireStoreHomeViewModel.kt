@@ -7,23 +7,32 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.Constraints
 import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.example.testing.home.firestore.repository.FireStoreHomeRepository
 import com.example.testing.home.firestore.repository.model.FireStoreStory
 import com.example.testing.home.firestore.repository.model.Post
 import com.example.testing.home.firestore.repository.workmanager.CreatePostWorker
+import com.example.testing.home.firestore.repository.workmanager.DeleteStoryWorker
 import com.example.testing.utils.ApplicationClass
 import com.example.testing.utils.NetworkResponse
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 class FireStoreHomeViewModel : ViewModel() {
 
     private val workManager = WorkManager.getInstance(ApplicationClass.application.baseContext)
+    private var workManagerForDelete: WorkManager? = null
     private val fireStoreHomeRepository = FireStoreHomeRepository()
-    private var workReq: OneTimeWorkRequest? = null
+    private var createPostWorkReq: OneTimeWorkRequest? = null
+    private var deleteStoryWorkReq: PeriodicWorkRequest? = null
 
 //    private val _createLivePost: MutableLiveData<NetworkResponse<Boolean>> = MutableLiveData()
 //    val createLivePost: LiveData<NetworkResponse<Boolean>> = _createLivePost
@@ -48,9 +57,9 @@ class FireStoreHomeViewModel : ViewModel() {
 
     fun createPost(context: Context, userPostImageView: Uri) = viewModelScope.launch {
         val inputData = Data.Builder().putString("user_post", userPostImageView.toString()).build()
-        workReq =
+        createPostWorkReq =
             OneTimeWorkRequest.Builder(CreatePostWorker::class.java).setInputData(inputData).build()
-        WorkManager.getInstance(context).enqueue(workReq!!)
+        WorkManager.getInstance(context).enqueue(createPostWorkReq!!)
     }
 
 
@@ -68,7 +77,6 @@ class FireStoreHomeViewModel : ViewModel() {
 
     fun getStory() = viewModelScope.launch {
         val result = fireStoreHomeRepository.getStories()
-        Log.d("TAG", "calling from Story firestore view model" + result)
         _getLiveStory.value = result
     }
 
@@ -78,10 +86,31 @@ class FireStoreHomeViewModel : ViewModel() {
         _getLiveRemoteConfigStrings.value = result
     }
 
-    fun observerWorkReq(workReq: OneTimeWorkRequest): LiveData<WorkInfo> {
+    fun deleteStory(context: Context) = viewModelScope.launch {
+        val constraint = Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+
+        if(workManagerForDelete == null) {
+            workManagerForDelete = WorkManager.getInstance(ApplicationClass.application.baseContext)
+            deleteStoryWorkReq = PeriodicWorkRequest.Builder(DeleteStoryWorker::class.java, 15, TimeUnit.MINUTES)
+                .setConstraints(constraint)
+                .build()
+            Log.d("TAG", "calling work req from view model")
+            WorkManager.getInstance(ApplicationClass.application.baseContext)
+                .enqueueUniquePeriodicWork("MyUniqueWork", ExistingPeriodicWorkPolicy.KEEP, deleteStoryWorkReq!!)
+        }
+    }
+    fun observeCreatePostWorkReq(workReq: OneTimeWorkRequest): LiveData<WorkInfo> {
+        createPostWorkReq = null
         return workManager.getWorkInfoByIdLiveData(workReq.id)
     }
-    fun returnWorkRequest(): OneTimeWorkRequest? {
-        return workReq
+    fun observeDeletePostWorkRequest(workReq: PeriodicWorkRequest): LiveData<WorkInfo>? {
+        deleteStoryWorkReq = null
+        return workManagerForDelete?.getWorkInfoByIdLiveData(workReq.id)
+    }
+    fun returnCreatePostWorkRequest(): OneTimeWorkRequest? {
+        return createPostWorkReq
+    }
+    fun returnDeletePostWorkRequest(): PeriodicWorkRequest? {
+        return deleteStoryWorkReq
     }
 }

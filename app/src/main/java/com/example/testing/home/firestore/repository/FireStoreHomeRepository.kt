@@ -57,7 +57,7 @@ class FireStoreHomeRepository {
 
         imageRef.putFile(userStoryImageView).await()
         val downloadStoryImagePath = imageRef.downloadUrl.await().toString()
-        val userStory = FireStoreStory(userId!!, downloadStoryImagePath)
+        val userStory = FireStoreStory(userId!!, storyId, downloadStoryImagePath)
 
         return try {
             fireStore.collection("Stories").document(storyId).set(userStory).await()
@@ -91,7 +91,7 @@ class FireStoreHomeRepository {
     suspend fun getStories(): List<FireStoreStory> {
         val storyList = mutableListOf<FireStoreStory>()
         val userId = firebaseAuth.currentUser?.uid
-        val storyDetailRef = fireStore.collection("Stories").whereEqualTo("storyId", userId).get()
+        val storyDetailRef = fireStore.collection("Stories").whereEqualTo("userId", userId).get()
 
         try {
             storyDetailRef.await().let {
@@ -126,6 +126,26 @@ class FireStoreHomeRepository {
         } catch (e: FirebaseRemoteConfigException) {
             e.printStackTrace()
             NetworkResponse.Error(e.message)
+        }
+    }
+
+    suspend fun deleteStory() {
+
+        val userId = firebaseAuth.currentUser?.uid
+        val deleteStoryRef = fireStore.collection("Stories").whereEqualTo("userId", userId).get()
+
+        try {
+            deleteStoryRef.await().let {
+                for(doc in it.documents) {
+                    val story = doc.toObject<FireStoreStory>()
+                    if( story!= null) {
+                        Log.d("TAG", "calling from firestore delete repo")
+                        fireStore.collection("Stories").document(story.storyId).delete().await()
+                    }
+                }
+            }
+        } catch(e: Exception) {
+            Log.d("TAG", "deleteStory:" + e)
         }
     }
 }
